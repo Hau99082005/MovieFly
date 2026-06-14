@@ -1,13 +1,125 @@
-import { Link } from "react-router-dom";
-import { assets } from "@/assets/assets";
+import { Link, useLocation } from "react-router-dom";
+import { MenuIcon, SearchIcon, XIcon, Tv2 } from "lucide-react";
+import { useState } from "react";
+
+const navLinks = [
+  { to: "/", label: "Trang chủ" },
+  { to: "/movies", label: "Xem phim" },
+  { to: "/schedule", label: "Lịch chiếu" },
+  { to: "/releases", label: "Mới nhất" },
+  { to: "/favorite", label: "Yêu thích" },
+];
 
 const Header = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { pathname } = useLocation();
+
+  const closeMenu = () => setIsOpen(false);
+
   return (
-    <div className="fixed top-0 left-0 z-50 w-full flex items-center justify-between px-6 md:px-16 lg:px-36 py-5">
-        <Link to="/">
-          <img src={assets.logo} alt="logo"/>
+    <>
+      <header className="fixed top-0 left-0 z-50 w-full px-6 md:px-12 lg:px-20 py-4 flex items-center justify-between bg-black/80 backdrop-blur-md border-b border-white/5">
+        <Link to="/" className="flex items-center gap-2.5 shrink-0">
+          <Tv2 className="w-10 h-10 text-primary" strokeWidth={2.5} />
+          <span
+            className="text-xl font-bold tracking-wide text-white"
+            style={{
+              fontSize: "28px",
+              fontStyle: "normal",
+              fontWeight: "700",
+              lineHeight: 1.3,
+              letterSpacing: "0.01em",
+            }}
+          >
+            Movie<span className="text-primary">Fly</span>
+          </span>
         </Link>
-    </div>
+
+        <nav className="hidden md:flex items-center gap-1 px-2 py-1.5 rounded-full bg-white/8 border border-white/10">
+          {navLinks.map(({ to, label }) => (
+            <Link
+              key={to + label}
+              to={to}
+              onClick={() => scrollTo(0, 0)}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200
+                ${
+                  pathname === to
+                    ? "bg-white/15 text-white"
+                    : "text-white/60 hover:text-white hover:bg-white/8"
+                }`}
+            >
+              {label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="hidden md:flex items-center gap-4 shrink-0">
+          <button className="text-white/60 hover:text-white transition-colors duration-200">
+            <SearchIcon className="w-5 h-5" />
+          </button>
+          <button className="px-5 py-2 bg-primary hover:bg-primary/85 active:scale-95 transition-all duration-200 rounded-full text-sm font-semibold text-white cursor-pointer">
+            Đăng nhập
+          </button>
+        </div>
+
+        <button
+          className="md:hidden text-white/80 hover:text-white transition-colors"
+          onClick={() => setIsOpen(true)}
+        >
+          <MenuIcon className="w-6 h-6" />
+        </button>
+      </header>
+
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+          onClick={closeMenu}
+        />
+      )}
+
+      <aside
+        className={`fixed top-0 right-0 z-50 h-full w-72 bg-zinc-950 border-l border-white/10
+          flex flex-col pt-20 pb-16 px-6 gap-2 md:hidden
+          transition-transform duration-300 ease-in-out
+          ${isOpen ? "translate-x-0" : "translate-x-full"}`}
+      >
+        <button
+          className="absolute top-5 right-5 text-white/60 hover:text-white transition-colors"
+          onClick={closeMenu}
+        >
+          <XIcon className="w-6 h-6" />
+        </button>
+
+        {navLinks.map(({ to, label }) => (
+          <Link
+            key={to + label}
+            to={to}
+            onClick={() => {
+              scrollTo(0, 0);
+              closeMenu();
+            }}
+            className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
+              ${
+                pathname === to
+                  ? "bg-white/10 text-white"
+                  : "text-white/60 hover:bg-white/6 hover:text-white"
+              }`}
+          >
+            {label}
+          </Link>
+        ))}
+
+        <div className="mt-auto flex flex-col gap-3">
+          <button className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/6 transition-all duration-200">
+            <SearchIcon className="w-4 h-4" />
+            Tìm kiếm
+          </button>
+          <button className="w-full py-3 bg-primary hover:bg-primary/85 transition-all duration-200 rounded-xl text-sm font-semibold text-white cursor-pointer">
+            Đăng nhập
+          </button>
+        </div>
+      </aside>
+    </>
   );
 };
 

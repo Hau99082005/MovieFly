@@ -1,4 +1,4 @@
-import logo from './Logo.png'
+import logo from './MovieFly_Logo_Đỏ_Hồng_Tươi_Sáng-removebg-preview.png'
 import marvelLogo from './marvelLogo.svg'
 import googlePlay from './googlePlay.svg'
 import appStore from './appStore.svg'
