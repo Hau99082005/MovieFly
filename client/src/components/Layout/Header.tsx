@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
-import { MenuIcon, SearchIcon, XIcon, Tv2 } from "lucide-react";
+import { MenuIcon, SearchIcon, XIcon, Tv2, TicketIcon } from "lucide-react";
 import { useState } from "react";
+import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
 
 const navLinks = [
   { to: "/", label: "Trang chủ" },
@@ -13,6 +14,8 @@ const navLinks = [
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { pathname } = useLocation();
+  const { user } = useUser();
+  const { openSignIn } = useClerk();
 
   const closeMenu = () => setIsOpen(false);
 
@@ -57,9 +60,24 @@ const Header = () => {
           <button className="text-white/60 hover:text-white transition-colors duration-200">
             <SearchIcon className="w-5 h-5" />
           </button>
-          <button className="px-5 py-2 bg-primary hover:bg-primary/85 active:scale-95 transition-all duration-200 rounded-full text-sm font-semibold text-white cursor-pointer">
-            Đăng nhập
-          </button>
+          {!user ? (
+            <button
+              onClick={() => openSignIn()}
+              className="px-5 py-2 bg-primary hover:bg-primary/85 active:scale-95 transition-all duration-200 rounded-full text-sm font-semibold text-white cursor-pointer"
+            >
+              Đăng nhập
+            </button>
+          ) : (
+            <UserButton>
+              <UserButton.MenuItems>
+                <UserButton.Action
+                  label="Đặt vé"
+                  labelIcon={<TicketIcon width={20} />}
+                  onClick={() => window.location.href = '/my-bookings'}
+                />
+              </UserButton.MenuItems>
+            </UserButton>
+          )}
         </div>
 
         <button
@@ -114,9 +132,21 @@ const Header = () => {
             <SearchIcon className="w-4 h-4" />
             Tìm kiếm
           </button>
-          <button className="w-full py-3 bg-primary hover:bg-primary/85 transition-all duration-200 rounded-xl text-sm font-semibold text-white cursor-pointer">
-            Đăng nhập
-          </button>
+          {!user ? (
+            <button
+              onClick={() => {
+                openSignIn();
+                closeMenu();
+              }}
+              className="w-full py-3 bg-primary hover:bg-primary/85 transition-all duration-200 rounded-xl text-sm font-semibold text-white cursor-pointer"
+            >
+              Đăng nhập
+            </button>
+          ) : (
+            <div className="flex justify-center">
+              <UserButton />
+            </div>
+          )}
         </div>
       </aside>
     </>
