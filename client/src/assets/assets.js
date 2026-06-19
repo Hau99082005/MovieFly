@@ -1,17 +1,27 @@
 import logo from './MovieFly_Logo_Đỏ_Hồng_Tươi_Sáng-removebg-preview.png'
+import logoMain from './Logo_1.png'
 import marvelLogo from './marvelLogo.svg'
 import googlePlay from './googlePlay.svg'
 import appStore from './appStore.svg'
 import screenImage from './screenImage.svg'
 import profile from './profile.png'
+import bachXa from './bach xa.jpg'
+import doraemon from './doraemon.png'
+import maXo from './ma xo.jpg'
+import ocMuonHon from './oc muon hon.jpg'
 
 export const assets = {
     logo,
+    logoMain,
     marvelLogo,
     googlePlay,
     appStore,
     screenImage,
-    profile
+    profile,
+    bachXa,
+    doraemon,
+    maXo,
+    ocMuonHon
 }
 
 export const dummyTrailers = [

@@ -1,7 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
-import { MenuIcon, SearchIcon, XIcon, Tv2, TicketIcon } from "lucide-react";
+import { MenuIcon, SearchIcon, XIcon, TicketIcon } from "lucide-react";
 import { useState } from "react";
 import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
+import { assets } from "@/assets/assets";
 
 const navLinks = [
   { to: "/", label: "Trang chủ" },
@@ -21,21 +22,13 @@ const Header = () => {
 
   return (
     <>
-      <header className="fixed top-0 left-0 z-50 w-full px-6 md:px-12 lg:px-20 py-4 flex items-center justify-between bg-black/80 backdrop-blur-md border-b border-white/5">
-        <Link to="/" className="flex items-center gap-2.5 shrink-0">
-          <Tv2 className="w-10 h-10 text-primary" strokeWidth={2.5} />
-          <span
-            className="text-xl font-bold tracking-wide text-white"
-            style={{
-              fontSize: "28px",
-              fontStyle: "normal",
-              fontWeight: "700",
-              lineHeight: 1.3,
-              letterSpacing: "0.01em",
-            }}
-          >
-            Movie<span className="text-primary">Fly</span>
-          </span>
+      <header className="fixed top-0 left-0 z-50 w-full px-4 md:px-12 lg:px-20 py-2 md:py-4 flex items-center justify-between bg-gradient-to-b from-black/70 to-transparent">
+        <Link to="/" className="flex items-center shrink-0">
+          <img
+            src={assets.logoMain}
+            alt="MovieFly"
+            className="h-24 sm:h-28 md:h-24 lg:h-28 w-auto object-contain"
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-1 px-2 py-1.5 rounded-full bg-white/8 border border-white/10">
@@ -73,7 +66,7 @@ const Header = () => {
                 <UserButton.Action
                   label="Đặt vé"
                   labelIcon={<TicketIcon width={20} />}
-                  onClick={() => window.location.href = '/my-bookings'}
+                  onClick={() => (window.location.href = "/my-bookings")}
                 />
               </UserButton.MenuItems>
             </UserButton>
