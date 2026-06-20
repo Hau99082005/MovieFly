@@ -1,5 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { StarIcon, TicketIcon, PlayIcon } from "lucide-react";
+import { StarIcon, TicketIcon, PlayIcon, XIcon } from "lucide-react";
+import { useState } from "react";
+
+const getYoutubeId = (url: string) => {
+  const match = url.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
+  return match ? match[1] : null;
+};
+
 interface Movie {
   _id: string;
   title: string;
@@ -9,6 +16,7 @@ interface Movie {
   vote_average?: number;
   release_date?: string;
   runtime?: number;
+  trailerUrl?: string;
 }
 
 interface MovieCardProps {
@@ -17,8 +25,10 @@ interface MovieCardProps {
 
 const MovieCard = ({ movie }: MovieCardProps) => {
   const navigate = useNavigate();
+  const [showTrailer, setShowTrailer] = useState(false);
 
   return (
+    <>
     <div
       className="group relative flex flex-col overflow-hidden cursor-pointer w-full"
       onClick={() => {
@@ -88,6 +98,7 @@ const MovieCard = ({ movie }: MovieCardProps) => {
         <button
           onClick={(e) => {
             e.stopPropagation();
+            setShowTrailer(true);
           }}
           className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded
             bg-zinc-800 hover:bg-zinc-700 text-white
@@ -127,7 +138,35 @@ const MovieCard = ({ movie }: MovieCardProps) => {
           Đặt Vé Ngay
         </button>
       </div>
+      {showTrailer && movie?.trailerUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm">
+          <button
+            onClick={() => setShowTrailer(false)}
+            className="absolute top-6 right-6 text-white hover:text-primary transition-colors"
+          >
+            <XIcon className="w-8 h-8" />
+          </button>
+          <div className="w-full max-w-5xl mx-4 aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
+            {(() => {
+              const youtubeId = getYoutubeId(movie.trailerUrl);
+              if (youtubeId) {
+                return (
+                  <iframe
+                    src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1`}
+                    title="Trailer"
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                );
+              }
+              return null;
+            })()}
+          </div>
+        </div>
+      )}
     </div>
+    </>
   );
 };
 

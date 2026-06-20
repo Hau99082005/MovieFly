@@ -13,6 +13,7 @@ import {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  XIcon,
 } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import timeFormat from "@/lib/timeFormat";
@@ -34,6 +35,7 @@ interface Movie {
   overview?: string;
   director?: string;
   casts?: Cast[];
+  trailerUrl?: string;
 }
 
 interface Showtime {
@@ -49,6 +51,11 @@ interface Cinema {
   showtimes: Record<string, Showtime[]>;
 }
 
+const getYoutubeId = (url: string) => {
+  const match = url.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
+  return match ? match[1] : null;
+};
+
 const MoviesDetailt = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -60,6 +67,7 @@ const MoviesDetailt = () => {
     dummyCinemasData[0]._id,
   );
   const [isFavorite, setIsFavorite] = useState(false);
+  const [showTrailer, setShowTrailer] = useState(false);
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
     dragFree: true,
@@ -96,8 +104,9 @@ const MoviesDetailt = () => {
     selectedCinema?.showtimes[selectedDate] || [];
 
   return (
-    <div className="min-h-screen">
-      <div className="relative h-[85vh] overflow-hidden">
+    <>
+      <div className="min-h-screen">
+        <div className="relative h-[85vh] overflow-hidden">
         <img
           src={movie.backdrop_path}
           alt={movie.title}
@@ -177,7 +186,10 @@ const MoviesDetailt = () => {
               </div>
 
               <div className="flex gap-4 mt-4">
-                <button className="flex items-center gap-2 px-8 py-3 bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold rounded-xl transition-all duration-300">
+                <button
+                  onClick={() => setShowTrailer(true)}
+                  className="flex items-center gap-2 px-8 py-3 bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold rounded-xl transition-all duration-300"
+                >
                   <PlayIcon className="w-5 h-5" />
                   Xem Trailer
                 </button>
@@ -213,7 +225,7 @@ const MoviesDetailt = () => {
                   dateTime={selectedCinema.showtimes}
                   selectedDate={selectedDate}
                   onDateChange={setSelectedDate}
-                  onBookNow={() => alert("Đặt vé thành công!")}
+                  onBookHandler={() => alert("Đặt vé thành công!")}
                 />
 
                 <div className="space-y-6">
@@ -389,7 +401,35 @@ const MoviesDetailt = () => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    {showTrailer && movie?.trailerUrl && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm">
+        <button
+          onClick={() => setShowTrailer(false)}
+          className="absolute top-6 right-6 text-white hover:text-primary transition-colors"
+        >
+          <XIcon className="w-8 h-8" />
+        </button>
+        <div className="w-full max-w-5xl mx-4 aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
+          {(() => {
+            const youtubeId = getYoutubeId(movie.trailerUrl);
+            if (youtubeId) {
+              return (
+                <iframe
+                  src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1`}
+                  title="Trailer"
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              );
+            }
+            return null;
+          })()}
+        </div>
+      </div>
+    )}
+    </>
   );
 };
 

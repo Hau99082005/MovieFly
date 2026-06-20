@@ -158,6 +158,7 @@ export const dummyShowsData = [
     vote_average: 6.4,
     vote_count: 15000,
     runtime: 102,
+    trailerUrl: "https://www.youtube.com/watch?v=aDpPc-sMThQ",
   },
   {
     _id: "1232546",
@@ -181,6 +182,7 @@ export const dummyShowsData = [
     vote_average: 6.405,
     vote_count: 18000,
     runtime: 103,
+    trailerUrl: "https://www.youtube.com/watch?v=lF45rvagppI",
   },
   {
     _id: "552524",
@@ -205,6 +207,7 @@ export const dummyShowsData = [
     vote_average: 7.117,
     vote_count: 27500,
     runtime: 108,
+    trailerUrl: "https://www.youtube.com/watch?v=BTo23ZCJu6E",
   },
   {
     _id: "668489",
@@ -229,6 +232,7 @@ export const dummyShowsData = [
     vote_average: 6.537,
     vote_count: 35960,
     runtime: 107,
+    trailerUrl: "https://www.youtube.com/watch?v=V_p3qpDUuz4",
   },
   {
     _id: "950387",
@@ -254,6 +258,7 @@ export const dummyShowsData = [
     vote_average: 6.516,
     vote_count: 15225,
     runtime: 101,
+    trailerUrl: "https://www.youtube.com/watch?v=QiXNbEKF3U0",
   },
   {
     _id: "575265",
@@ -278,6 +283,7 @@ export const dummyShowsData = [
     vote_average: 7.042,
     vote_count: 19885,
     runtime: 170,
+    trailerUrl: "https://www.youtube.com/watch?v=aDpPc-sMThQ",
   },
   {
     _id: "986056",
@@ -302,6 +308,7 @@ export const dummyShowsData = [
     vote_average: 7.443,
     vote_count: 23569,
     runtime: 127,
+    trailerUrl: "https://www.youtube.com/watch?v=BTo23ZCJu6E",
   },
 ];
 
