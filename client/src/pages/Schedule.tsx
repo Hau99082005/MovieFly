@@ -9,7 +9,7 @@ const generateDateRange = () => {
     { value: "2025-07-24", label: "Hôm Nay" },
     { value: "2025-07-25", label: "Ngày mai" },
     { value: "2025-07-26", label: "26/07" },
-    { value: "2025-07-27", label: "27/07" }
+    { value: "2025-07-27", label: "27/07" },
   ];
 };
 
@@ -28,7 +28,7 @@ const Schedule = () => {
     });
   };
 
-  const filteredCinemas = dummyCinemasData.filter(cinema => {
+  const filteredCinemas = dummyCinemasData.filter((cinema) => {
     if (selectedCinema !== "all" && cinema._id !== selectedCinema) return false;
     return true;
   });
@@ -37,34 +37,41 @@ const Schedule = () => {
     <section className="relative py-20 overflow-hidden min-h-[90vh]">
       <div className="absolute inset-0 bg-gradient-to-b from-zinc-900 via-zinc-950 to-black pointer-events-none" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(0,212,255,0.1)_0%,_transparent_50%)] pointer-events-none" />
-      
+
       <div className="relative px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24">
         <BlurCircle top="-40px" right="-60px" />
         <BlurCircle top="400px" left="-80px" />
-
-        {/* Header Filters */}
         <div className="mb-10">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-1 h-7 rounded-full bg-gradient-to-b from-primary to-transparent" />
-            <h2 className="text-2xl md:text-3xl font-bold text-white">Lịch chiếu phim</h2>
+            <h2
+              className="text-2xl md:text-3xl font-bold text-white"
+              style={{
+                fontSize: "28px",
+                fontStyle: "normal",
+                lineHeight: 1.4,
+                letterSpacing: "0.01em",
+              }}
+            >
+              Lịch chiếu phim
+            </h2>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Date Selector */}
-            <div className="bg-zinc-900/70 border border-zinc-700/60 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center">
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            <div className="bg-zinc-900/70 border border-zinc-700/60 rounded-xl p-4 md:p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center shrink-0">
                   <span className="text-primary font-bold text-xs">1</span>
                 </div>
-                <span className="text-primary font-semibold">Ngày</span>
-                <CalendarIcon className="w-5 h-5 text-primary ml-auto" />
+                <span className="text-primary font-semibold text-sm md:text-base">Ngày</span>
+                <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 text-primary ml-auto shrink-0" />
               </div>
               <select
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="w-full bg-zinc-800 text-white border border-zinc-600 rounded-lg px-3 py-2 focus:outline-none focus:border-primary transition-colors"
+                className="w-full bg-zinc-800 text-white border border-zinc-600 rounded-lg px-3 py-2.5 md:py-3 focus:outline-none focus:border-primary transition-colors text-sm md:text-base"
               >
-                {dates.map(date => (
+                {dates.map((date) => (
                   <option key={date.value} value={date.value}>
                     {date.label}
                   </option>
@@ -73,21 +80,21 @@ const Schedule = () => {
             </div>
 
             {/* Movie Selector */}
-            <div className="bg-zinc-900/70 border border-zinc-700/60 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center">
+            <div className="bg-zinc-900/70 border border-zinc-700/60 rounded-xl p-4 md:p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center shrink-0">
                   <span className="text-primary font-bold text-xs">2</span>
                 </div>
-                <span className="text-primary font-semibold">Phim</span>
-                <Film className="w-5 h-5 text-primary ml-auto" />
+                <span className="text-primary font-semibold text-sm md:text-base">Phim</span>
+                <Film className="w-5 h-5 md:w-6 md:h-6 text-primary ml-auto shrink-0" />
               </div>
               <select
                 value={selectedMovie}
                 onChange={(e) => setSelectedMovie(e.target.value)}
-                className="w-full bg-zinc-800 text-white border border-zinc-600 rounded-lg px-3 py-2 focus:outline-none focus:border-primary transition-colors"
+                className="w-full bg-zinc-800 text-white border border-zinc-600 rounded-lg px-3 py-2.5 md:py-3 focus:outline-none focus:border-primary transition-colors text-sm md:text-base"
               >
                 <option value="all">Tất cả phim</option>
-                {dummyShowsData.map(movie => (
+                {dummyShowsData.map((movie) => (
                   <option key={movie._id} value={movie._id}>
                     {movie.title}
                   </option>
@@ -96,21 +103,21 @@ const Schedule = () => {
             </div>
 
             {/* Cinema Selector */}
-            <div className="bg-zinc-900/70 border border-zinc-700/60 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center">
+            <div className="bg-zinc-900/70 border border-zinc-700/60 rounded-xl p-4 md:p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center shrink-0">
                   <span className="text-primary font-bold text-xs">3</span>
                 </div>
-                <span className="text-primary font-semibold">Rạp</span>
-                <MapPinIcon className="w-5 h-5 text-primary ml-auto" />
+                <span className="text-primary font-semibold text-sm md:text-base">Rạp</span>
+                <MapPinIcon className="w-5 h-5 md:w-6 md:h-6 text-primary ml-auto shrink-0" />
               </div>
               <select
                 value={selectedCinema}
                 onChange={(e) => setSelectedCinema(e.target.value)}
-                className="w-full bg-zinc-800 text-white border border-zinc-600 rounded-lg px-3 py-2 focus:outline-none focus:border-primary transition-colors"
+                className="w-full bg-zinc-800 text-white border border-zinc-600 rounded-lg px-3 py-2.5 md:py-3 focus:outline-none focus:border-primary transition-colors text-sm md:text-base"
               >
                 <option value="all">Tất cả rạp</option>
-                {dummyCinemasData.map(cinema => (
+                {dummyCinemasData.map((cinema) => (
                   <option key={cinema._id} value={cinema._id}>
                     {cinema.name}
                   </option>
@@ -125,9 +132,10 @@ const Schedule = () => {
         {/* Showtimes List */}
         <div className="space-y-6">
           {filteredCinemas.map((cinema) => {
-            const moviesToShow = selectedMovie !== "all" 
-              ? dummyShowsData.filter(m => m._id === selectedMovie)
-              : dummyShowsData;
+            const moviesToShow =
+              selectedMovie !== "all"
+                ? dummyShowsData.filter((m) => m._id === selectedMovie)
+                : dummyShowsData;
 
             return (
               <div key={cinema._id} className="space-y-5">
@@ -137,7 +145,10 @@ const Schedule = () => {
                   if (!showtimes || showtimes.length === 0) return null;
 
                   return (
-                    <div key={movie._id} className="flex flex-col md:flex-row gap-5 bg-zinc-900/60 border border-zinc-700/50 rounded-xl p-5 backdrop-blur-sm transition-all duration-300 hover:border-zinc-600 hover:shadow-lg">
+                    <div
+                      key={movie._id}
+                      className="flex flex-col md:flex-row gap-5 bg-zinc-900/60 border border-zinc-700/50 rounded-xl p-5 backdrop-blur-sm transition-all duration-300 hover:border-zinc-600 hover:shadow-lg"
+                    >
                       {/* Movie Poster & Info */}
                       <div className="flex-shrink-0">
                         <img
@@ -146,7 +157,9 @@ const Schedule = () => {
                           className="w-36 h-52 object-cover rounded-lg shadow-xl"
                         />
                         <div className="mt-3">
-                          <h3 className="text-white font-bold text-sm md:text-base line-clamp-2">{movie.title}</h3>
+                          <h3 className="text-white font-bold text-sm md:text-base line-clamp-2">
+                            {movie.title}
+                          </h3>
                           <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
                             <StarIcon className="w-3 h-3 text-yellow-400 fill-yellow-400" />
                             <span>{movie.vote_average?.toFixed(1)}</span>
@@ -170,12 +183,20 @@ const Schedule = () => {
                       <div className="flex-1 min-w-0">
                         <div className="mb-4">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs text-gray-400 uppercase tracking-wider">Cinestar</span>
+                            <span className="text-xs text-gray-400 uppercase tracking-wider">
+                              Cinestar
+                            </span>
                             <span className="text-xs text-zinc-600">•</span>
-                            <span className="text-xs text-zinc-400 uppercase tracking-wider">STANDARD</span>
+                            <span className="text-xs text-zinc-400 uppercase tracking-wider">
+                              STANDARD
+                            </span>
                           </div>
-                          <h4 className="text-lg md:text-xl font-bold text-white mb-1">{cinema.name}</h4>
-                          <p className="text-gray-400 text-xs md:text-sm">{cinema.address}</p>
+                          <h4 className="text-lg md:text-xl font-bold text-white mb-1">
+                            {cinema.name}
+                          </h4>
+                          <p className="text-gray-400 text-xs md:text-sm">
+                            {cinema.address}
+                          </p>
                         </div>
 
                         <div className="flex flex-wrap gap-2">
@@ -183,7 +204,9 @@ const Schedule = () => {
                             <button
                               key={idx}
                               onClick={() => {
-                                navigate(`/movies/${movie._id}/${selectedDate}`);
+                                navigate(
+                                  `/movies/${movie._id}/${selectedDate}`,
+                                );
                                 scrollTo(0, 0);
                               }}
                               className="px-4 py-2 bg-zinc-800 hover:bg-primary hover:text-black text-white border border-zinc-700 hover:border-primary font-mono font-bold text-sm rounded-lg transition-all duration-200 hover:scale-105 active:scale-95"
@@ -196,7 +219,7 @@ const Schedule = () => {
                     </div>
                   );
                 })}
-                
+
                 <div className="h-px bg-gradient-to-r from-transparent via-zinc-700/40 to-transparent" />
               </div>
             );

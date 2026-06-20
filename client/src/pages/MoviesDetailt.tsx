@@ -4,12 +4,10 @@ import MovieHero from "@/components/MovieHero";
 import MovieInfoSidebar from "@/components/MovieInfoSidebar";
 import CastCarousel from "@/components/CastCarousel";
 import SimilarMovies from "@/components/SimilarMovies";
+import Loading from "./Loading";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import {
-  ChevronDownIcon,
-  XIcon,
-} from "lucide-react";
+import {  useParams } from "react-router-dom";
+import { ChevronDownIcon, XIcon } from "lucide-react";
 
 interface Cast {
   name: string;
@@ -52,6 +50,7 @@ const getYoutubeId = (url: string) => {
 const MoviesDetailt = () => {
   const { id } = useParams<{ id: string }>();
   const [movie, setMovie] = useState<Movie | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<string>(
     Object.keys(dummyCinemasData[0].showtimes)[0],
   );
@@ -62,21 +61,27 @@ const MoviesDetailt = () => {
   const [showTrailer, setShowTrailer] = useState(false);
 
   const getMovie = () => {
-    const foundMovie = dummyShowsData.find((s) => s._id === id);
-    setMovie(foundMovie);
+    setLoading(true);
+    // Giả lập delay để thấy loading
+    setTimeout(() => {
+      const foundMovie = dummyShowsData.find((s) => s._id === id);
+      setMovie(foundMovie);
+      setLoading(false);
+    }, 500);
   };
 
   useEffect(() => {
     getMovie();
   }, [id]);
 
+  if (loading) {
+    return <Loading />;
+  }
+
   if (!movie) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading...</p>
-        </div>
+        <p className="text-gray-400 text-xl">Không tìm thấy phim!</p>
       </div>
     );
   }
@@ -131,7 +136,9 @@ const MoviesDetailt = () => {
                         <div className="relative">
                           <select
                             value={selectedCinemaId}
-                            onChange={(e) => setSelectedCinemaId(e.target.value)}
+                            onChange={(e) =>
+                              setSelectedCinemaId(e.target.value)
+                            }
                             className="w-full bg-zinc-800/50 border border-zinc-700 text-white font-medium py-3 px-4 rounded-lg appearance-none cursor-pointer hover:border-primary transition-colors"
                           >
                             {dummyCinemasData.map((cinema) => (
