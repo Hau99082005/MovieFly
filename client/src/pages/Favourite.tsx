@@ -12,7 +12,7 @@ const Favourite = () => {
         <div className="flex items-center gap-3 mb-12">
           <div className="w-1 h-7 rounded-full bg-primary shadow-[0_0_8px_rgba(0,212,255,0.8)]" />
           <h2 className="text-2xl md:text-3xl font-bold text-white tracking-wide">
-            Đặt vé ngay bây giờ
+            Phim yêu thích của bạn
           </h2>
           <div className="flex-1 h-px bg-gradient-to-r from-primary/30 to-transparent ml-2" />
         </div>

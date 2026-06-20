@@ -151,6 +151,7 @@ export const dummyShowsData = [
       { id: 12, name: "Adventure" },
     ],
     casts: dummyCastsData,
+    director: "Paul W.S. Anderson",
     release_date: "2025-02-27",
     original_language: "en",
     tagline: "She seeks the power to free her people.",
@@ -163,7 +164,7 @@ export const dummyShowsData = [
     id: 1232546,
     title: "Until Dawn",
     overview:
-      "One year after her sister Melanie mysteriously disappeared, Clover and her friends head into the remote valley where she vanished in search of answers. Exploring an abandoned visitor center, they find themselves stalked by a masked killer and horrifically murdered one by one...only to wake up and find themselves back at the beginning of the same evening.",
+      "One year after her sister Melanie mysteriously disappeared, Clover and her friends head into the remote valley where she vanished in search of answers. Exploring an abandoned visitor center, they find themselves stalked by a masked killer and horrifically murdered one by one... only to wake up and find themselves back at the beginning of the same evening.",
     poster_path:
       "https://image.tmdb.org/t/p/original/juA4IWO52Fecx8lhAsxmDgy3M3.jpg",
     backdrop_path:
@@ -173,6 +174,7 @@ export const dummyShowsData = [
       { id: 9648, name: "Mystery" },
     ],
     casts: dummyCastsData,
+    director: "David F. Sandberg",
     release_date: "2025-04-23",
     original_language: "en",
     tagline: "Every night a different nightmare.",
@@ -196,6 +198,7 @@ export const dummyShowsData = [
       { id: 878, name: "Science Fiction" },
     ],
     casts: dummyCastsData,
+    director: "Dean Fleischer Camp",
     release_date: "2025-05-17",
     original_language: "en",
     tagline: "Hold on to your coconuts.",
@@ -219,6 +222,7 @@ export const dummyShowsData = [
       { id: 53, name: "Thriller" },
     ],
     casts: dummyCastsData,
+    director: "Gareth Evans",
     release_date: "2025-04-25",
     original_language: "en",
     tagline: "No law. Only disorder.",
@@ -243,6 +247,7 @@ export const dummyShowsData = [
       { id: 14, name: "Fantasy" },
     ],
     casts: dummyCastsData,
+    director: "Jared Hess",
     release_date: "2025-03-31",
     original_language: "en",
     tagline: "Be there and be square.",
@@ -266,6 +271,7 @@ export const dummyShowsData = [
       { id: 53, name: "Thriller" },
     ],
     casts: dummyCastsData,
+    director: "Christopher McQuarrie",
     release_date: "2025-05-17",
     original_language: "en",
     tagline: "Our lives are the sum of our choices.",
@@ -289,6 +295,7 @@ export const dummyShowsData = [
       { id: 12, name: "Adventure" },
     ],
     casts: dummyCastsData,
+    director: "Jake Schreier",
     release_date: "2025-04-30",
     original_language: "en",
     tagline: "Everyone deserves a second shot.",
@@ -390,6 +397,102 @@ export const dummyDashboardData = {
     },
   ],
 };
+
+export const dummyCinemasData = [
+  {
+    _id: "cinema-1",
+    name: "Cinestar Saigon",
+    address: "459 Lê Văn Sỹ, Phường 14, Quận 3, TP.HCM",
+    showtimes: {
+      "2025-07-24": [
+        { time: "2025-07-24T10:00:00.000Z", type: "2D", price: 65 },
+        { time: "2025-07-24T13:00:00.000Z", type: "3D", price: 85 },
+        { time: "2025-07-24T16:00:00.000Z", type: "IMAX", price: 120 },
+        { time: "2025-07-24T19:30:00.000Z", type: "2D", price: 75 },
+        { time: "2025-07-24T22:00:00.000Z", type: "2D", price: 65 },
+      ],
+      "2025-07-25": [
+        { time: "2025-07-25T10:30:00.000Z", type: "2D", price: 65 },
+        { time: "2025-07-25T13:30:00.000Z", type: "3D", price: 85 },
+        { time: "2025-07-25T16:30:00.000Z", type: "IMAX", price: 120 },
+        { time: "2025-07-25T20:00:00.000Z", type: "2D", price: 75 },
+      ],
+      "2025-07-26": [
+        { time: "2025-07-26T11:00:00.000Z", type: "2D", price: 70 },
+        { time: "2025-07-26T14:00:00.000Z", type: "3D", price: 90 },
+        { time: "2025-07-26T17:00:00.000Z", type: "IMAX", price: 125 },
+        { time: "2025-07-26T20:30:00.000Z", type: "2D", price: 80 },
+      ],
+      "2025-07-27": [
+        { time: "2025-07-27T10:00:00.000Z", type: "2D", price: 65 },
+        { time: "2025-07-27T13:00:00.000Z", type: "3D", price: 85 },
+        { time: "2025-07-27T16:00:00.000Z", type: "IMAX", price: 120 },
+      ],
+    },
+  },
+  {
+    _id: "cinema-2",
+    name: "Cinestar Quận 7",
+    address: "123 Nguyễn Văn Linh, Phường 10, Quận 7, TP.HCM",
+    showtimes: {
+      "2025-07-24": [
+        { time: "2025-07-24T10:15:00.000Z", type: "2D", price: 60 },
+        { time: "2025-07-24T13:15:00.000Z", type: "3D", price: 80 },
+        { time: "2025-07-24T16:15:00.000Z", type: "2D", price: 70 },
+        { time: "2025-07-24T19:15:00.000Z", type: "3D", price: 90 },
+        { time: "2025-07-24T22:15:00.000Z", type: "2D", price: 60 },
+      ],
+      "2025-07-25": [
+        { time: "2025-07-25T10:45:00.000Z", type: "2D", price: 60 },
+        { time: "2025-07-25T13:45:00.000Z", type: "3D", price: 80 },
+        { time: "2025-07-25T16:45:00.000Z", type: "2D", price: 70 },
+        { time: "2025-07-25T19:45:00.000Z", type: "3D", price: 90 },
+      ],
+      "2025-07-26": [
+        { time: "2025-07-26T11:15:00.000Z", type: "2D", price: 65 },
+        { time: "2025-07-26T14:15:00.000Z", type: "3D", price: 85 },
+        { time: "2025-07-26T17:15:00.000Z", type: "2D", price: 75 },
+        { time: "2025-07-26T20:15:00.000Z", type: "3D", price: 95 },
+      ],
+      "2025-07-27": [
+        { time: "2025-07-27T10:15:00.000Z", type: "2D", price: 60 },
+        { time: "2025-07-27T13:15:00.000Z", type: "3D", price: 80 },
+        { time: "2025-07-27T16:15:00.000Z", type: "2D", price: 70 },
+      ],
+    },
+  },
+  {
+    _id: "cinema-3",
+    name: "CGV Vincom Center",
+    address: "72 Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM",
+    showtimes: {
+      "2025-07-24": [
+        { time: "2025-07-24T10:30:00.000Z", type: "2D", price: 70 },
+        { time: "2025-07-24T13:30:00.000Z", type: "IMAX", price: 130 },
+        { time: "2025-07-24T16:30:00.000Z", type: "3D", price: 95 },
+        { time: "2025-07-24T19:30:00.000Z", type: "2D", price: 85 },
+        { time: "2025-07-24T22:30:00.000Z", type: "2D", price: 70 },
+      ],
+      "2025-07-25": [
+        { time: "2025-07-25T11:00:00.000Z", type: "2D", price: 70 },
+        { time: "2025-07-25T14:00:00.000Z", type: "IMAX", price: 130 },
+        { time: "2025-07-25T17:00:00.000Z", type: "3D", price: 95 },
+        { time: "2025-07-25T20:00:00.000Z", type: "2D", price: 85 },
+      ],
+      "2025-07-26": [
+        { time: "2025-07-26T11:30:00.000Z", type: "2D", price: 75 },
+        { time: "2025-07-26T14:30:00.000Z", type: "IMAX", price: 135 },
+        { time: "2025-07-26T17:30:00.000Z", type: "3D", price: 100 },
+        { time: "2025-07-26T20:30:00.000Z", type: "2D", price: 90 },
+      ],
+      "2025-07-27": [
+        { time: "2025-07-27T10:30:00.000Z", type: "2D", price: 70 },
+        { time: "2025-07-27T13:30:00.000Z", type: "IMAX", price: 130 },
+        { time: "2025-07-27T16:30:00.000Z", type: "3D", price: 95 },
+      ],
+    },
+  },
+];
 
 export const dummyBookingData = [
   {
