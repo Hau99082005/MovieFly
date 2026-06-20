@@ -1,6 +1,7 @@
 import { assets } from "@/assets/assets";
-import { CalendarIcon, ClockIcon } from "lucide-react";
+import { ArrowRight, CalendarIcon, ClockIcon } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 const bannerData = [
   {
@@ -71,6 +72,8 @@ const Banner = () => {
       isAnimating.current = false;
     }, 800);
   };
+
+  const navigate = useNavigate();
 
   return (
     <div className="relative w-full h-[100svh] min-h-[500px] overflow-hidden bg-black">
@@ -174,6 +177,12 @@ const Banner = () => {
               <span>{bannerData[current].duration}</span>
             </div>
           </div>
+          <button
+            onClick={() => navigate('/movies')}
+            className="pointer-events-auto mt-5 sm:mt-6 inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base bg-primary hover:bg-primary-dull active:scale-95 transition-all duration-200 rounded-full font-semibold text-black cursor-pointer anim-fade-up-4"
+          >
+            Khám phá xem phim <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+          </button>
         </div>
 
         <div className="flex items-center gap-2 pointer-events-auto anim-fade-up-4">
