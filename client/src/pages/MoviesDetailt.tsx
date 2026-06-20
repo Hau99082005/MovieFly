@@ -1,4 +1,5 @@
 import { dummyCinemasData, dummyShowsData } from "@/assets/assets";
+import DateSelect from "@/components/DateSelect";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -203,37 +204,20 @@ const MoviesDetailt = () => {
                 </p>
               </div>
 
-              <div>
-                <h2 className="text-2xl font-black text-white uppercase mb-4">
+              <div className="space-y-8">
+                <h2 className="text-2xl font-black text-white uppercase">
                   Lịch chiếu
                 </h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                  <div className="space-y-2">
-                    <label className="text-gray-400 text-sm font-medium">
-                      Chọn ngày
-                    </label>
-                    <div className="relative">
-                      <select
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                        className="w-full bg-zinc-800 border border-gray-600 text-white font-bold py-3 px-4 rounded-lg appearance-none cursor-pointer hover:border-primary transition-colors"
-                      >
-                        {Object.keys(selectedCinema.showtimes).map((date) => (
-                          <option key={date} value={date}>
-                            {new Date(date).toLocaleDateString("vi-VN", {
-                              weekday: "long",
-                              day: "numeric",
-                              month: "long",
-                            })}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                    </div>
-                  </div>
+                <DateSelect
+                  dateTime={selectedCinema.showtimes}
+                  selectedDate={selectedDate}
+                  onDateChange={setSelectedDate}
+                  onBookNow={() => alert("Đặt vé thành công!")}
+                />
 
-                  <div className="space-y-2 md:col-span-2">
+                <div className="space-y-6">
+                  <div className="space-y-2">
                     <label className="text-gray-400 text-sm font-medium">
                       Chọn rạp
                     </label>
@@ -241,7 +225,7 @@ const MoviesDetailt = () => {
                       <select
                         value={selectedCinemaId}
                         onChange={(e) => setSelectedCinemaId(e.target.value)}
-                        className="w-full bg-zinc-800 border border-gray-600 text-white font-bold py-3 px-4 rounded-lg appearance-none cursor-pointer hover:border-primary transition-colors"
+                        className="w-full bg-zinc-800/50 border border-zinc-700 text-white font-medium py-3 px-4 rounded-lg appearance-none cursor-pointer hover:border-primary transition-colors"
                       >
                         {dummyCinemasData.map((cinema) => (
                           <option key={cinema._id} value={cinema._id}>
@@ -252,37 +236,36 @@ const MoviesDetailt = () => {
                       <ChevronDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                     </div>
                   </div>
-                </div>
 
-                <div className="bg-zinc-800 rounded-xl p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="text-xl font-bold text-primary">
-                        {selectedCinema.name}
-                      </h3>
-                      <p className="text-gray-400 text-sm">
-                        {selectedCinema.address}
-                      </p>
+                  <div className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-6">
+                    <div className="flex items-center justify-between mb-6">
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">
+                          {selectedCinema.name}
+                        </h3>
+                        <p className="text-gray-400 text-sm">
+                          {selectedCinema.address}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                    {showtimesForSelectedDate.map((timeSlot, idx) => (
-                      <button
-                        key={idx}
-                        className="flex flex-col items-center gap-1 px-3 py-3 bg-zinc-700 hover:bg-primary hover:text-black text-white font-bold rounded-lg transition-all duration-200"
-                      >
-                        <span className="text-lg">
-                          {new Date(timeSlot.time).toLocaleTimeString("vi-VN", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
-                        <span className="text-xs text-gray-400 group-hover:text-black/70">
-                          {timeSlot.type} ·{" "}
-                          {timeSlot.price.toLocaleString("vi-VN")}đ
-                        </span>
-                      </button>
-                    ))}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                      {showtimesForSelectedDate.map((timeSlot, idx) => (
+                        <button
+                          key={idx}
+                          className="flex flex-col items-center gap-1 px-3 py-3 bg-zinc-700 hover:bg-primary hover:text-black text-white font-medium rounded-lg transition-all duration-200 border border-transparent hover:border-primary"
+                        >
+                          <span className="text-base font-medium">
+                            {new Date(timeSlot.time).toLocaleTimeString("vi-VN", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            {timeSlot.type}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>

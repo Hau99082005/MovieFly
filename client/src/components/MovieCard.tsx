@@ -43,9 +43,9 @@ const MovieCard = ({ movie }: MovieCardProps) => {
 
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-400">
           <div className="relative">
-            <div className="absolute inset-0 bg-white/20 rounded-full animate-ping" />
-            <div className="relative w-16 h-16 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.4)] group-hover:scale-110 group-hover:bg-white transition-all duration-400">
-              <PlayIcon className="w-8 h-8 text-zinc-900 fill-zinc-900 ml-1" />
+            <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping" />
+            <div className="relative w-16 h-16 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-[0_0_30px_rgba(0,212,255,0.4)] group-hover:scale-110 group-hover:bg-primary transition-all duration-400">
+              <PlayIcon className="w-8 h-8 text-white fill-white ml-1" />
             </div>
           </div>
         </div>
