@@ -36,7 +36,7 @@ const MovieCard = ({ movie }: MovieCardProps) => {
         scrollTo(0, 0);
       }}
     >
-      <div className="relative aspect-[2/3] overflow-hidden rounded-none">
+      <div className="relative aspect-[2/3] overflow-hidden rounded-xl">
         <img
           src={movie.poster_path || movie.backdrop_path}
           alt={movie.title}
@@ -44,9 +44,9 @@ const MovieCard = ({ movie }: MovieCardProps) => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-        <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-full">
-          <StarIcon className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
-          <span className="text-xs font-bold text-white">
+        <div className="absolute top-4 right-4 flex items-center gap-2 bg-black/80 backdrop-blur-sm px-4 py-2 rounded-full">
+          <StarIcon className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+          <span className="text-base font-bold text-white">
             {movie.vote_average?.toFixed(1) ?? "N/A"}
           </span>
         </div>
@@ -54,24 +54,15 @@ const MovieCard = ({ movie }: MovieCardProps) => {
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-400">
           <div className="relative">
             <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping" />
-            <div className="relative w-16 h-16 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-[0_0_30px_rgba(0,212,255,0.4)] group-hover:scale-110 group-hover:bg-primary transition-all duration-400">
-              <PlayIcon className="w-8 h-8 text-white fill-white ml-1" />
+            <div className="relative w-20 h-20 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-[0_0_30px_rgba(0,212,255,0.4)] group-hover:scale-110 group-hover:bg-primary transition-all duration-400">
+              <PlayIcon className="w-10 h-10 text-white fill-white ml-1" />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-2 pt-4">
-        <h3
-          style={{
-            fontSize: "14px",
-            fontWeight: "600",
-            fontStyle: "normal",
-            lineHeight: 1.4,
-            letterSpacing: "0.01em",
-          }}
-          className="font-bold text-white text-sm text-center leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-200"
-        >
+      <div className="flex flex-col items-center gap-3 pt-5">
+        <h3 className="font-bold text-white text-lg md:text-xl text-center leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-200">
           {movie.title}
         </h3>
 
@@ -79,14 +70,7 @@ const MovieCard = ({ movie }: MovieCardProps) => {
           {movie.genres?.slice(0, 2).map((g) => (
             <span
               key={g.id}
-              className="text-[10px] font-medium text-gray-400 uppercase tracking-wider"
-              style={{
-                fontSize: "14px",
-                fontWeight: "400",
-                fontStyle: "normal",
-                lineHeight: 1.6,
-                letterSpacing: "0.01em",
-              }}
+              className="text-sm md:text-base font-medium text-gray-400 uppercase tracking-wider"
             >
               {g.name}
             </span>
@@ -94,25 +78,18 @@ const MovieCard = ({ movie }: MovieCardProps) => {
         </div>
       </div>
 
-      <div className="flex gap-2 mt-4 w-full">
+      <div className="flex gap-2 mt-5 w-full">
         <button
           onClick={(e) => {
             e.stopPropagation();
             setShowTrailer(true);
           }}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded
+          className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl
             bg-zinc-800 hover:bg-zinc-700 text-white
-            text-xs font-bold uppercase tracking-wide
-            transition-all duration-200"
-          style={{
-            fontSize: "12px",
-            fontWeight: "600",
-            fontStyle: "normal",
-            lineHeight: 1.6,
-            letterSpacing: "0.01em",
-          }}
+            text-xs md:text-sm font-bold uppercase tracking-wide
+            transition-all duration-200 active:scale-95"
         >
-          <PlayIcon className="w-4.5 h-4" />
+          <PlayIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
           Xem Trailer
         </button>
         <button
@@ -121,20 +98,13 @@ const MovieCard = ({ movie }: MovieCardProps) => {
             navigate(`/movies/${movie._id}`);
             scrollTo(0, 0);
           }}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded
+          className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl
             bg-primary hover:bg-primary-dull text-black
-            text-xs font-bold uppercase tracking-wide
+            text-xs md:text-sm font-bold uppercase tracking-wide
             shadow-[0_0_15px_rgba(0,212,255,0.4)]
             transition-all duration-200 active:scale-95"
-          style={{
-            fontSize: "12px",
-            fontWeight: "600",
-            fontStyle: "normal",
-            lineHeight: 1.6,
-            letterSpacing: "0.01em",
-          }}
         >
-          <TicketIcon className="w-4.5 h-4" />
+          <TicketIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
           Đặt Vé Ngay
         </button>
       </div>
