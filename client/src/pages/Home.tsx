@@ -1,5 +1,6 @@
 import Banner from "@/components/Banner"
 import FutureSection from "@/components/FutureSection"
+import TakeMovies from "@/components/TakeMovies"
 import TrailersSection from "@/components/TrailersSection"
 
 const Home = () => {
@@ -8,6 +9,7 @@ const Home = () => {
       <Banner/>
       <FutureSection/>
       <TrailersSection/>
+      <TakeMovies/>
     </div>
   )
 }
