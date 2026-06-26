@@ -91,7 +91,7 @@ const TrailersSection = () => {
                     {isPlaying && isActive && id ? (
                       <iframe
                         className="w-full h-full"
-                        src={`https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`}
+                        src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`}
                         title="Trailer"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
@@ -131,20 +131,21 @@ const TrailersSection = () => {
               })}
             </div>
 
-            <div className="flex items-center gap-3 mt-4 px-1">
+            <div className="flex items-center gap-4 mt-6 px-1">
               <div className="flex-1 h-px bg-white/10" />
               <span className="text-xs text-gray-500 uppercase tracking-widest">
                 {currentIdx + 1} / {dummyTrailers.length}
               </span>
-              <div className="flex gap-1.5">
+              <div className="flex gap-3">
                 {dummyTrailers.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => goTo(idx)}
-                    className={`h-0.5 rounded-full transition-all duration-300 cursor-pointer ${
+                    aria-label={`Go to trailer ${idx + 1}`}
+                    className={`w-3 h-3 rounded-full transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary ${
                       idx === currentIdx
-                        ? "w-6 bg-primary"
-                        : "w-2 bg-white/30 hover:bg-white/60"
+                        ? "w-8 bg-primary"
+                        : "bg-white/30 hover:bg-white/60"
                     }`}
                   />
                 ))}
@@ -160,7 +161,8 @@ const TrailersSection = () => {
                 <button
                   key={idx}
                   onClick={() => goTo(idx)}
-                  className={`group relative flex-1 overflow-hidden transition-all duration-200
+                  aria-label={`Select trailer ${idx + 1}`}
+                  className={`group relative flex-1 overflow-hidden transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary
                     ${
                       isActive
                         ? "ring-2 ring-inset ring-primary shadow-[0_0_20px_rgba(0,212,255,0.25)]"
@@ -182,9 +184,9 @@ const TrailersSection = () => {
                       className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity duration-200 ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
                     >
                       <div className="relative flex items-center justify-center">
-                        <div className="absolute w-14 h-14 rounded-full bg-primary/20 animate-ping" />
-                        <div className="flex items-center justify-center w-9 h-9 rounded-full bg-white/10 border border-white/40 backdrop-blur-sm shadow-[0_0_16px_rgba(0,212,255,0.4)] group-hover:border-primary/80 group-hover:bg-primary/20 transition-all duration-200">
-                          <PlayIcon className="w-4 h-4 text-white fill-white ml-0.5" />
+                        <div className="absolute w-16 h-16 rounded-full bg-primary/20 animate-ping" />
+                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/10 border border-white/40 backdrop-blur-sm shadow-[0_0_16px_rgba(0,212,255,0.4)] group-hover:border-primary/80 group-hover:bg-primary/20 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary">
+                          <PlayIcon className="w-5 h-5 text-white fill-white ml-0.5" />
                         </div>
                       </div>
                     </div>

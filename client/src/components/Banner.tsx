@@ -185,15 +185,16 @@ const Banner = () => {
           </button>
         </div>
 
-        <div className="flex items-center gap-2 pointer-events-auto anim-fade-up-4">
+        <div className="flex items-center gap-3 pointer-events-auto anim-fade-up-4">
           {bannerData.map((_, idx) => (
             <button
               key={idx}
               onClick={() => goTo(idx)}
-              className={`rounded-full transition-all duration-300 cursor-pointer ${
+              aria-label={`Go to slide ${idx + 1}`}
+              className={`rounded-full transition-all duration-300 cursor-pointer p-1.5 focus:outline-none focus:ring-2 focus:ring-primary ${
                 idx === current
-                  ? "w-6 h-2 bg-primary"
-                  : "w-2 h-2 bg-white/40 hover:bg-white/60"
+                  ? "w-8 h-3 bg-primary"
+                  : "w-3 h-3 bg-white/40 hover:bg-white/60"
               }`}
             />
           ))}

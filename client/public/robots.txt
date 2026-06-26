@@ -1,0 +1,9 @@
+# MovieFly Robots.txt
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /login/
+Disallow: /search/
+
+# Sitemap
+Sitemap: http://localhost:5173/sitemap.xml

@@ -36,7 +36,7 @@ const MovieCard = ({ movie }: MovieCardProps) => {
         scrollTo(0, 0);
       }}
     >
-      <div className="relative aspect-[2/3] overflow-hidden rounded-xl">
+      <div className="relative aspect-[2/3] overflow-hidden">
         <img
           src={movie.poster_path || movie.backdrop_path}
           alt={movie.title}
@@ -84,12 +84,12 @@ const MovieCard = ({ movie }: MovieCardProps) => {
             e.stopPropagation();
             setShowTrailer(true);
           }}
-          className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl
+          className="flex-1 flex items-center justify-center gap-1 px-2 py-2
             bg-zinc-800 hover:bg-zinc-700 text-white
-            text-xs md:text-sm font-bold uppercase tracking-wide
-            transition-all duration-200 active:scale-95"
+            text-[10px] md:text-xs lg:text-sm font-bold uppercase tracking-wide
+            transition-all duration-200 active:scale-95 whitespace-nowrap overflow-hidden text-ellipsis"
         >
-          <PlayIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
+          <PlayIcon className="w-3 h-3 md:w-3.5 md:h-3.5" />
           Xem Trailer
         </button>
         <button
@@ -98,13 +98,13 @@ const MovieCard = ({ movie }: MovieCardProps) => {
             navigate(`/movies/${movie._id}`);
             scrollTo(0, 0);
           }}
-          className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl
+          className="flex-1 flex items-center justify-center gap-1 px-2 py-2
             bg-primary hover:bg-primary-dull text-black
-            text-xs md:text-sm font-bold uppercase tracking-wide
+            text-[10px] md:text-xs lg:text-sm font-bold uppercase tracking-wide
             shadow-[0_0_15px_rgba(0,212,255,0.4)]
-            transition-all duration-200 active:scale-95"
+            transition-all duration-200 active:scale-95 whitespace-nowrap overflow-hidden text-ellipsis"
         >
-          <TicketIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
+          <TicketIcon className="w-3 h-3 md:w-3.5 md:h-3.5" />
           Đặt Vé Ngay
         </button>
       </div>
@@ -122,7 +122,7 @@ const MovieCard = ({ movie }: MovieCardProps) => {
               if (youtubeId) {
                 return (
                   <iframe
-                    src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1`}
+                    src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1`}
                     title="Trailer"
                     className="w-full h-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

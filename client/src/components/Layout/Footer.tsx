@@ -6,9 +6,9 @@ const footerLinks = [
     title: "Khám phá",
     links: [
       { label: "Trang chủ", to: "/" },
-      { label: "Xem phim", to: "/movies" },
-      { label: "Lịch chiếu", to: "/schedule" },
-      { label: "Mới nhất", to: "/releases" },
+      { label: "Phim mới", to: "/movies" },
+      { label: "Phim bộ", to: "/series" },
+      { label: "Phim chiếu rạp", to: "/movies" },
       { label: "Yêu thích", to: "/favorite" },
     ],
   },
@@ -16,10 +16,10 @@ const footerLinks = [
     title: "Thể loại",
     links: [
       { label: "Hành động", to: "/movies" },
-      { label: "Kinh dị", to: "/movies" },
       { label: "Tình cảm", to: "/movies" },
       { label: "Hoạt hình", to: "/movies" },
       { label: "Khoa học viễn tưởng", to: "/movies" },
+      { label: "Hài hước", to: "/movies" },
     ],
   },
   {
@@ -112,8 +112,9 @@ const Footer = () => {
                 letterSpacing: "0.01em",
               }}
             >
-              Trải nghiệm điện ảnh đỉnh cao tại nhà. Khám phá hàng ngàn bộ phim
-              hấp dẫn, đặt vé nhanh chóng và tận hưởng giải trí không giới hạn.
+              Nền tảng xem phim trực tuyến hàng đầu. Khám phá hàng ngàn bộ phim
+              và chương trình truyền hình chất lượng cao, cập nhật liên tục mỗi
+              ngày.
             </p>
             <div className="flex items-center gap-3">
               {socials.map(({ svg, href, label, hoverClass }) => (
