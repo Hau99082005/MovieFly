@@ -142,7 +142,7 @@ const Header = () => {
               <UserButton>
                 <UserButton.MenuItems>
                   <UserButton.Action
-                    label="Đặt vé"
+                    label="Xem phim của tôi"
                     labelIcon={<Ticket width={20} />}
                     onClick={() => (window.location.href = "/my-bookings")}
                   />
