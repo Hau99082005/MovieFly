@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const getUser = async (req, res) => {
   try {
@@ -22,9 +23,7 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Email and password are required" });
+      return res.status(400).json({ message: "Email and password are required" });
     }
 
     const user = await User.findOne({ email: email.toLowerCase() });
@@ -43,17 +42,25 @@ const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
+    const token = jwt.sign(
+      { 
+        userId: user._id,
+        email: user.email,
+      },
+      process.env.JWT_SECRET || "moviefly-secret-key-2026",
+      { expiresIn: "30d" }
+    );
+
     const userResponse = user.toObject();
     delete userResponse.password_hash;
 
     return res.status(200).json({
       message: "Login successful",
+      token,
       user: userResponse,
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Server Error", error: error.message });
+    return res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
 
