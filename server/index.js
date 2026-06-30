@@ -7,6 +7,7 @@ const userSessionRouter = require("./router/userSession");
 const userProfileRouter = require("./router/userProfile");
 const genresRouter = require("./router/genres");
 const moviesRouter = require("./router/movies");
+const ratingRouter = require("./router/ratings");
 
 dbConnect();
 
@@ -21,6 +22,7 @@ app.use("/api/sessions", userSessionRouter);
 app.use("/api/userProfile", userProfileRouter);
 app.use("/api/genres", genresRouter);
 app.use("/api/movies", moviesRouter);
+app.use("/api/ratings", ratingRouter);
 
 app.get("/", (req, res) => {
   res.json({ message: "MovieFly API Server" });
