@@ -21,6 +21,7 @@ const subtitlesRouter = require("./router/subtitles");
 const subscriptionPlansRouter = require("./router/subscription_plans");
 const userSubscriptionsRouter = require("./router/user_subscriptions");
 const videoSourceRouter = require("./router/video_source");
+const paymentsMethodRouter = require("./router/payments_method");
 
 dbConnect();
 
@@ -49,6 +50,7 @@ app.use("/api/subtitles", subtitlesRouter);
 app.use("/api/subscription-plans", subscriptionPlansRouter);
 app.use("/api/user-subscriptions", userSubscriptionsRouter);
 app.use("/api/video-sources", videoSourceRouter);
+app.use("/api/payments-method", paymentsMethodRouter);
 app.get("/", (req, res) => {
   res.json({ message: "MovieFly API Server" });
 });
