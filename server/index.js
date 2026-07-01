@@ -13,6 +13,7 @@ const movieGenresRouter = require("./router/moviegenres");
 const seasonsRouter = require("./router/seasons");
 const episodesRouter = require("./router/episodes");
 const commentsRouter = require("./router/comments");
+const watchHistoryRouter = require("./router/watch_history");
 
 dbConnect();
 
@@ -33,6 +34,7 @@ app.use("/api/moviegenres", movieGenresRouter);
 app.use("/api/seasons", seasonsRouter);
 app.use("/api/episodes", episodesRouter);
 app.use("/api/comments", commentsRouter);
+app.use("/api/watch-history", watchHistoryRouter);
 
 app.get("/", (req, res) => {
   res.json({ message: "MovieFly API Server" });
