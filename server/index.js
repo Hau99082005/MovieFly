@@ -18,6 +18,7 @@ const countriesRouter = require("./router/countries");
 const peopleRouter = require("./router/people");
 const movieCastRouter = require("./router/movie_cast");
 const subtitlesRouter = require("./router/subtitles");
+const subscriptionPlansRouter = require("./router/subscription_plans");
 
 dbConnect();
 
@@ -43,6 +44,7 @@ app.use("/api/countries", countriesRouter);
 app.use("/api/people", peopleRouter);
 app.use("/api/movie-cast", movieCastRouter);
 app.use("/api/subtitles", subtitlesRouter);
+app.use("/api/subscription-plans", subscriptionPlansRouter);
 app.get("/", (req, res) => {
   res.json({ message: "MovieFly API Server" });
 });
