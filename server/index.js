@@ -27,9 +27,23 @@ const transactionsRouter = require("./router/transactions");
 dbConnect();
 
 const express = require("express");
+const cors = require("cors");
 
 const app = express();
 const PORT = process.env.PORT;
+
+app.use(cors({
+  origin: ["http://localhost:5173", "http://localhost:3000"],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
+app.use((req, res, next) => {
+  console.log(`📨 ${req.method} ${req.path}`);
+  next();
+});
+
 app.use(express.json());
 app.use("/api/users", userRouter);
 app.use("/api/banners", bannerRouter);
@@ -54,9 +68,28 @@ app.use("/api/video-sources", videoSourceRouter);
 app.use("/api/payments-method", paymentsMethodRouter);
 app.use("/api/transactions", transactionsRouter);
 app.get("/", (req, res) => {
+  console.log("📡 Root endpoint accessed");
   res.json({ message: "MovieFly API Server" });
 });
 
+app.use((req, res, next) => {
+  console.log(`📥 ${req.method} ${req.path}`);
+  next();
+});
+
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log("\n");
+  console.log("=".repeat(50));
+  console.log("🚀 MovieFly Server Started Successfully!");
+  console.log("=".repeat(50));
+  console.log(`📍 Server URL: http://localhost:${PORT}`);
+  console.log(`📍 API Base: http://localhost:${PORT}/api`);
+  console.log(`🔗 Client URL: http://localhost:5173`);
+  console.log(`📊 MongoDB: ${process.env.MONGODB_URI ? '✅ Connected' : '❌ Not configured'}`);
+  console.log("=".repeat(50));
+  console.log("\n💡 Test endpoints:");
+  console.log(`  GET  http://localhost:${PORT}/`);
+  console.log(`  GET  http://localhost:${PORT}/api/payments-method`);
+  console.log(`  GET  http://localhost:${PORT}/api/transactions`);
+  console.log("\n🔍 Waiting for requests...\n");
 });
