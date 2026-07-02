@@ -92,6 +92,29 @@ class ApiService {
 
 export const api = new ApiService(API_URL);
 
+export const bannersApi = {
+  getAll: async () => {
+    const response = await fetch(`${API_URL}/banners`);
+    return await response.json();
+  },
+  getActive: async () => {
+    const response = await fetch(`${API_URL}/banners?is_active=true`);
+    return await response.json();
+  },
+  getById: (id: string) => api.get(`/banners/${id}`),
+  create: (data: FormData) => 
+    fetch(`${API_URL}/banners`, {
+      method: "POST",
+      body: data,
+    }).then(res => res.json()),
+  update: (id: string, data: FormData) =>
+    fetch(`${API_URL}/banners/${id}`, {
+      method: "PUT",
+      body: data,
+    }).then(res => res.json()),
+  delete: (id: string) => api.delete(`/banners/${id}`),
+};
+
 export const paymentMethodsApi = {
   getAll: () => api.get("/payments-method"),
   getActive: () => api.get("/payments-method/active"),
