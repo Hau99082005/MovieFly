@@ -71,7 +71,6 @@ class ApiService {
 
   async testConnection(): Promise<boolean> {
     try {
-      console.log("🔍 Testing connection to:", this.baseURL.replace("/api", "/"));
       const response = await fetch(this.baseURL.replace("/api", "/"));
       
       if (!response.ok) {
@@ -79,7 +78,6 @@ class ApiService {
       }
       
       const data = await response.json();
-      console.log("✅ Server connection successful!");
       console.log("📦 Server response:", data);
       return true;
     } catch (error) {
@@ -113,6 +111,29 @@ export const bannersApi = {
       body: data,
     }).then(res => res.json()),
   delete: (id: string) => api.delete(`/banners/${id}`),
+};
+
+export const moviesApi = {
+  getAll: async (params?: { page?: number; limit?: number }) => {
+    const queryParams = new URLSearchParams();
+    if (params?.page) queryParams.append("page", params.page.toString());
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    const url = `/movies${queryParams.toString() ? "?" + queryParams.toString() : ""}`;
+    const response = await fetch(`${API_URL}${url}`);
+    return await response.json();
+  },
+  getById: (id: string) => api.get(`/movies/${id}`),
+  create: (data: FormData) => 
+    fetch(`${API_URL}/movies`, {
+      method: "POST",
+      body: data,
+    }).then(res => res.json()),
+  update: (id: string, data: FormData) =>
+    fetch(`${API_URL}/movies/${id}`, {
+      method: "PUT",
+      body: data,
+    }).then(res => res.json()),
+  delete: (id: string) => api.delete(`/movies/${id}`),
 };
 
 export const paymentMethodsApi = {
