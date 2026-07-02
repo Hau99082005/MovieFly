@@ -19,8 +19,6 @@ const App = () => {
 
   useEffect(() => {
     const testConnection = async () => {
-      console.log("🔍 Testing server connection...");
-      
       try {
         const isConnected = await api.testConnection();
         
@@ -29,7 +27,6 @@ const App = () => {
             duration: 3000,
             position: "top-right",
           });
-          console.log("✅ Server connection successful");
         } else {
           toast.error("❌ Không thể kết nối tới server", {
             duration: 5000,
@@ -45,7 +42,6 @@ const App = () => {
         console.error("❌ Connection error:", error);
       }
     };
-
     testConnection();
   }, []);
 
