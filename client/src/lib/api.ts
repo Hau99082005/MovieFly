@@ -113,6 +113,24 @@ export const bannersApi = {
   delete: (id: string) => api.delete(`/banners/${id}`),
 };
 
+export const movieGenresApi = {
+  getAll: async () => {
+    const response = await fetch(`${API_URL}/moviegenres`);
+    return await response.json();
+  },
+  getById: (id: string) => api.get(`/moviegenres/${id}`),
+  getByMovieId: async (movieId: string) => {
+    const response = await fetch(`${API_URL}/moviegenres/movie/${movieId}`);
+    return await response.json();
+  },
+  getByGenreId: async (genreId: string) => {
+    const response = await fetch(`${API_URL}/moviegenres/genre/${genreId}`);
+    return await response.json();
+  },
+  create: (data: any) => api.post("/moviegenres", data),
+  delete: (id: string) => api.delete(`/moviegenres/${id}`),
+};
+
 export const moviesApi = {
   getAll: async (params?: { page?: number; limit?: number }) => {
     const queryParams = new URLSearchParams();
