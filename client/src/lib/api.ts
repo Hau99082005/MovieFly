@@ -208,4 +208,91 @@ export const transactionsApi = {
   delete: (id: string) => api.delete(`/transactions/${id}`),
 };
 
+export const seasonsApi = {
+  getAll: async () => {
+    const response = await fetch(`${API_URL}/seasons`);
+    return await response.json();
+  },
+  getByMovieId: async (movieId: string) => {
+    const response = await fetch(`${API_URL}/seasons/movie/${movieId}`);
+    return await response.json();
+  },
+  getById: async (id: string) => {
+    const response = await fetch(`${API_URL}/seasons/${id}`);
+    return await response.json();
+  },
+  create: (data: FormData) => 
+    fetch(`${API_URL}/seasons`, {
+      method: "POST",
+      body: data,
+    }).then(res => res.json()),
+  update: (id: string, data: FormData) =>
+    fetch(`${API_URL}/seasons/${id}`, {
+      method: "PUT",
+      body: data,
+    }).then(res => res.json()),
+  delete: (id: string) => api.delete(`/seasons/${id}`),
+};
+
+export const episodesApi = {
+  getAll: async (params?: { movieId?: string; seasonId?: string }) => {
+    const queryParams = new URLSearchParams();
+    if (params?.movieId) queryParams.append("movieId", params.movieId);
+    if (params?.seasonId) queryParams.append("seasonId", params.seasonId);
+    const url = `/episodes${queryParams.toString() ? "?" + queryParams.toString() : ""}`;
+    const response = await fetch(`${API_URL}${url}`);
+    return await response.json();
+  },
+  getBySeason: async (seasonId: string) => {
+    const response = await fetch(`${API_URL}/episodes/season/${seasonId}`);
+    return await response.json();
+  },
+  getById: async (id: string) => {
+    const response = await fetch(`${API_URL}/episodes/${id}`);
+    return await response.json();
+  },
+  incrementView: (id: string) => api.patch(`/episodes/${id}/view`, {}),
+  create: (data: FormData) => 
+    fetch(`${API_URL}/episodes`, {
+      method: "POST",
+      body: data,
+    }).then(res => res.json()),
+  update: (id: string, data: FormData) =>
+    fetch(`${API_URL}/episodes/${id}`, {
+      method: "PUT",
+      body: data,
+    }).then(res => res.json()),
+  delete: (id: string) => api.delete(`/episodes/${id}`),
+};
+
+export const commentsApi = {
+  getAll: async (params?: { movieId?: string; episodeId?: string; userId?: string; status?: string }) => {
+    const queryParams = new URLSearchParams();
+    if (params?.movieId) queryParams.append("movieId", params.movieId);
+    if (params?.episodeId) queryParams.append("episodeId", params.episodeId);
+    if (params?.userId) queryParams.append("userId", params.userId);
+    if (params?.status) queryParams.append("status", params.status);
+    const url = `/comments${queryParams.toString() ? "?" + queryParams.toString() : ""}`;
+    const response = await fetch(`${API_URL}${url}`);
+    return await response.json();
+  },
+  getByMovieId: async (movieId: string, status: string = "approved") => {
+    const response = await fetch(`${API_URL}/comments/movie/${movieId}?status=${status}`);
+    return await response.json();
+  },
+  getByEpisodeId: async (episodeId: string, status: string = "approved") => {
+    const response = await fetch(`${API_URL}/comments/episode/${episodeId}?status=${status}`);
+    return await response.json();
+  },
+  getById: async (id: string) => {
+    const response = await fetch(`${API_URL}/comments/${id}`);
+    return await response.json();
+  },
+  create: (data: any) => api.post("/comments", data),
+  update: (id: string, data: any) => api.put(`/comments/${id}`, data),
+  delete: (id: string) => api.delete(`/comments/${id}`),
+  like: (id: string) => api.patch(`/comments/${id}/like`, {}),
+  unlike: (id: string) => api.patch(`/comments/${id}/unlike`, {}),
+};
+
 export default api;

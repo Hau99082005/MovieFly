@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import Header from "./components/Layout/Header";
 import Home from "./pages/Home";
 import Movies from "./pages/Movies";
-import MovieDetail from "./pages/MovieDetail";
 import SeatLayout from "./pages/SeatLayout";
 import MyBookings from "./pages/MyBookings";
 import Favourite from "./pages/Favourite";
@@ -13,6 +12,7 @@ import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
 import Footer from "./components/Layout/Footer";
 import { api } from "./lib/api";
+import MovieDetailMovieFly from "./pages/MovieDetailMovieFly";
 
 const App = () => {
   const isAdminRoute = useLocation().pathname.startsWith("/admin");
@@ -52,7 +52,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/movies" element={<Movies />} />
-        <Route path="/movies/:id" element={<MovieDetail />} />
+        <Route path="/movies/:id" element={<MovieDetailMovieFly />} />
         <Route path="/movies/:id/:date" element={<SeatLayout />} />
         <Route path="/my-bookings" element={<MyBookings />} />
         <Route path="/favorite" element={<Favourite />} />
