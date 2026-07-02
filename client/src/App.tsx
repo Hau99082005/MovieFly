@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import Header from "./components/Layout/Header";
 import Home from "./pages/Home";
 import Movies from "./pages/Movies";
-import MoviesDetailt from "./pages/MoviesDetailt";
+import MovieDetail from "./pages/MovieDetail";
 import SeatLayout from "./pages/SeatLayout";
 import MyBookings from "./pages/MyBookings";
 import Favourite from "./pages/Favourite";
@@ -52,7 +52,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/movies" element={<Movies />} />
-        <Route path="/movies/:id" element={<MoviesDetailt />} />
+        <Route path="/movies/:id" element={<MovieDetail />} />
         <Route path="/movies/:id/:date" element={<SeatLayout />} />
         <Route path="/my-bookings" element={<MyBookings />} />
         <Route path="/favorite" element={<Favourite />} />

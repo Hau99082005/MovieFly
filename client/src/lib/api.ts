@@ -113,6 +113,24 @@ export const bannersApi = {
   delete: (id: string) => api.delete(`/banners/${id}`),
 };
 
+export const movieCastApi = {
+  getAll: async () => {
+    const response = await fetch(`${API_URL}/movie-cast`);
+    return await response.json();
+  },
+  getById: (id: string) => api.get(`/movie-cast/${id}`),
+  getByMovieId: async (movieId: string) => {
+    const response = await fetch(`${API_URL}/movie-cast/movie/${movieId}`);
+    return await response.json();
+  },
+  getByPersonId: async (personId: string) => {
+    const response = await fetch(`${API_URL}/movie-cast/person/${personId}`);
+    return await response.json();
+  },
+  create: (data: any) => api.post("/movie-cast", data),
+  delete: (id: string) => api.delete(`/movie-cast/${id}`),
+};
+
 export const movieGenresApi = {
   getAll: async () => {
     const response = await fetch(`${API_URL}/moviegenres`);
@@ -140,7 +158,10 @@ export const moviesApi = {
     const response = await fetch(`${API_URL}${url}`);
     return await response.json();
   },
-  getById: (id: string) => api.get(`/movies/${id}`),
+  getById: async (id: string) => {
+    const response = await fetch(`${API_URL}/movies/${id}`);
+    return await response.json();
+  },
   create: (data: FormData) => 
     fetch(`${API_URL}/movies`, {
       method: "POST",
