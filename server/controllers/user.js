@@ -20,20 +20,26 @@ const getUser = async (req, res) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { username, email, password, full_name, phone, gender, birth_day } = req.body;
+    const { username, email, password, full_name, phone, gender, birth_day } =
+      req.body;
 
     if (!username || !email || !password || !full_name) {
       return res.status(400).json({
-        message: "Missing required fields: username, email, password, full_name",
+        message:
+          "Missing required fields: username, email, password, full_name",
       });
     }
 
     if (password.length < 8) {
-      return res.status(400).json({ message: "Password must be at least 8 characters" });
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 8 characters" });
     }
 
     if (password.length > 128) {
-      return res.status(400).json({ message: "Password must not exceed 128 characters" });
+      return res
+        .status(400)
+        .json({ message: "Password must not exceed 128 characters" });
     }
 
     if (!/(?=.*[a-z])/.test(password)) {
@@ -49,7 +55,9 @@ const registerUser = async (req, res) => {
     }
 
     if (!/(?=.*\d)/.test(password)) {
-      return res.status(400).json({ message: "Password must contain at least one number" });
+      return res
+        .status(400)
+        .json({ message: "Password must contain at least one number" });
     }
 
     const existingEmail = await User.findOne({ email: email.toLowerCase() });
@@ -81,7 +89,7 @@ const registerUser = async (req, res) => {
         role: newUser.role,
       },
       process.env.JWT_SECRET || "moviefly-secret-key-2026",
-      { expiresIn: "30d" }
+      { expiresIn: "30d" },
     );
 
     const userResponse = newUser.toObject();
@@ -98,7 +106,9 @@ const registerUser = async (req, res) => {
     if (error.code === 11000) {
       return res.status(400).json({ message: "Email already exists" });
     }
-    return res.status(500).json({ message: "Server Error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Server Error", error: error.message });
   }
 };
 
@@ -107,7 +117,9 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
     }
 
     const user = await User.findOne({ email: email.toLowerCase() });
@@ -127,13 +139,13 @@ const loginUser = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { 
+      {
         userId: user._id,
         email: user.email,
         role: user.role,
       },
       process.env.JWT_SECRET || "moviefly-secret-key-2026",
-      { expiresIn: "30d" }
+      { expiresIn: "30d" },
     );
 
     const userResponse = user.toObject();
@@ -145,7 +157,9 @@ const loginUser = async (req, res) => {
       user: userResponse,
     });
   } catch (error) {
-    return res.status(500).json({ message: "Server Error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Server Error", error: error.message });
   }
 };
 
@@ -282,9 +296,18 @@ const syncClerkUser = async (req, res) => {
       user.avatar_url = avatar_url || user.avatar_url;
       await user.save();
 
-      return res
-        .status(200)
-        .json({ message: "User updated successfully", user });
+      return res.status(200).json({ 
+        message: "User updated successfully", 
+        user: {
+          _id: user._id,
+          username: user.username,
+          email: user.email,
+          full_name: user.full_name,
+          avatar_url: user.avatar_url,
+          role: user.role,
+          status: user.status,
+        }
+      });
     } else {
       const newUser = new User({
         clerkId,
@@ -292,17 +315,49 @@ const syncClerkUser = async (req, res) => {
         email,
         full_name: full_name || username,
         avatar_url: avatar_url || "",
+        role: "user",
+        status: "active",
       });
       await newUser.save();
 
-      return res
-        .status(201)
-        .json({ message: "User synced successfully", user: newUser });
+      return res.status(201).json({ 
+        message: "User synced successfully", 
+        user: {
+          _id: newUser._id,
+          username: newUser.username,
+          email: newUser.email,
+          full_name: newUser.full_name,
+          avatar_url: newUser.avatar_url,
+          role: newUser.role,
+          status: newUser.status,
+        }
+      });
     }
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Server Error", error: error.message });
+    return res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
+
+const getUserRole = async (req, res) => {
+  try {
+    const { clerkId } = req.params;
+
+    if (!clerkId) {
+      return res.status(400).json({ message: "clerkId is required" });
+    }
+
+    const user = await User.findOne({ clerkId }).select("role status");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ 
+      role: user.role,
+      status: user.status,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
 
@@ -341,5 +396,6 @@ module.exports = {
   loginUser,
   createUser,
   syncClerkUser,
+  getUserRole,
   deleteUserByEmail,
 };

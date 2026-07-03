@@ -9,6 +9,7 @@ import {
   Bell,
   Cast,
   Film,
+  Shield,
 } from "lucide-react";
 import { useState } from "react";
 import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
@@ -29,13 +30,20 @@ const secondaryLinks = [
   { to: "/sports", label: "Thể Thao" },
 ];
 
-const Header = () => {
+interface HeaderProps {
+  userRole: string | null;
+}
+
+const Header = ({ userRole }: HeaderProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { pathname } = useLocation();
   const { user } = useUser();
   const { openSignIn } = useClerk();
 
   const closeMenu = () => setIsOpen(false);
+
+  console.log("🎨 Header render - userRole:", userRole);
+  console.log("👤 User:", user?.emailAddresses[0]?.emailAddress);
 
   return (
     <>
@@ -141,9 +149,23 @@ const Header = () => {
             ) : (
               <UserButton>
                 <UserButton.MenuItems>
+                  {userRole === "admin" && (
+                    <UserButton.Action
+                      label="Quản trị Admin"
+                      labelIcon={<Shield width={20} />}
+                      onClick={() => (window.location.href = "/admin")}
+                    />
+                  )}
+                  {(userRole === "admin" || userRole === "moderator") && (
+                    <UserButton.Action
+                      label="Quản lý nội dung"
+                      labelIcon={<Film width={20} />}
+                      onClick={() => (window.location.href = "/moderator")}
+                    />
+                  )}
                   <UserButton.Action
                     label="Xem phim của tôi"
-                    labelIcon={<Film  width={20} />}
+                    labelIcon={<Film width={20} />}
                     onClick={() => (window.location.href = "/my-bookings")}
                   />
                 </UserButton.MenuItems>
