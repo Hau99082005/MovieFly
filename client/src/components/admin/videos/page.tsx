@@ -13,6 +13,7 @@ import {
   Loader2,
 } from "lucide-react";
 import AdminLayout from "../../../pages/admin/AdminLayout";
+import toast from "react-hot-toast";
 
 interface VideoSource {
   _id: string;
@@ -86,7 +87,7 @@ export default function VideosPage() {
       const result = await response.json();
       setVideos(result.data || []);
     } catch (error) {
-      alert("Lỗi khi tải danh sách video");
+      toast.error("Lỗi khi tải danh sách video");
     } finally {
       setLoading(false);
     }
@@ -171,12 +172,12 @@ export default function VideosPage() {
 
   const handleSubmit = async () => {
     if (!formData.movieId) {
-      alert("Vui lòng chọn phim");
+      toast.error("Vui lòng chọn phim");
       return;
     }
 
     if (!editingVideo && !videoFile) {
-      alert("Vui lòng chọn file video");
+      toast.error("Vui lòng chọn file video");
       return;
     }
 
@@ -217,7 +218,7 @@ export default function VideosPage() {
 
         await fetchVideos();
         setIsCreateModalOpen(false);
-        alert("Thêm video thành công");
+        toast.success("Thêm video thành công");
       } else if (editingVideo) {
         const updateFormData = new FormData();
         updateFormData.append("movieId", formData.movieId);
@@ -241,10 +242,10 @@ export default function VideosPage() {
 
         await fetchVideos();
         setIsEditModalOpen(false);
-        alert("Cập nhật video thành công");
+        toast.success("Cập nhật video thành công");
       }
     } catch (error: any) {
-      alert(error.message || "Có lỗi xảy ra khi xử lý video");
+      toast.error(error.message || "Có lỗi xảy ra khi xử lý video");
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
@@ -265,12 +266,12 @@ export default function VideosPage() {
 
       if (response.ok) {
         await fetchVideos();
-        alert("Xóa video thành công");
+        toast.success("Xóa video thành công");
       } else {
-        alert("Có lỗi xảy ra");
+        toast.error("Có lỗi xảy ra");
       }
     } catch (error) {
-      alert("Có lỗi xảy ra");
+      toast.error("Có lỗi xảy ra");
     }
   };
 
