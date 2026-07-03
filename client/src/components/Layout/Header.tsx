@@ -3,12 +3,12 @@ import {
   Menu,
   Search,
   X,
-  Ticket,
   Home,
   Tv,
   Baby,
   Bell,
   Cast,
+  Film,
 } from "lucide-react";
 import { useState } from "react";
 import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
@@ -143,7 +143,7 @@ const Header = () => {
                 <UserButton.MenuItems>
                   <UserButton.Action
                     label="Xem phim của tôi"
-                    labelIcon={<Ticket width={20} />}
+                    labelIcon={<Film  width={20} />}
                     onClick={() => (window.location.href = "/my-bookings")}
                   />
                 </UserButton.MenuItems>

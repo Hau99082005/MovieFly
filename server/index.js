@@ -2,6 +2,8 @@ const dotenv = require("dotenv");
 dotenv.config();
 const dbConnect = require("./lib/dbConnect");
 const userRouter = require("./router/user");
+const adminRouter = require("./router/admin");
+const clerkWebhookRouter = require("./router/clerk_webhook");
 const bannerRouter = require("./router/banner");
 const userSessionRouter = require("./router/userSession");
 const userProfileRouter = require("./router/userProfile");
@@ -45,7 +47,9 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+app.use("/api/webhooks/clerk", clerkWebhookRouter);
 app.use("/api/users", userRouter);
+app.use("/api/admin", adminRouter);
 app.use("/api/banners", bannerRouter);
 app.use("/api/sessions", userSessionRouter);
 app.use("/api/userProfile", userProfileRouter);

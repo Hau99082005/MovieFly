@@ -48,6 +48,11 @@ const userSchema = new mongoose.Schema(
       enum: ["active", "inactive", "banned"],
       default: "active",
     },
+    role: {
+      type: String,
+      enum: ["user", "admin", "moderator"],
+      default: "user",
+    },
     email_verified_at: {
       type: Date,
       default: null,

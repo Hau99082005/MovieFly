@@ -18,6 +18,90 @@ const getUser = async (req, res) => {
   }
 };
 
+const registerUser = async (req, res) => {
+  try {
+    const { username, email, password, full_name, phone, gender, birth_day } = req.body;
+
+    if (!username || !email || !password || !full_name) {
+      return res.status(400).json({
+        message: "Missing required fields: username, email, password, full_name",
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ message: "Password must be at least 8 characters" });
+    }
+
+    if (password.length > 128) {
+      return res.status(400).json({ message: "Password must not exceed 128 characters" });
+    }
+
+    if (!/(?=.*[a-z])/.test(password)) {
+      return res.status(400).json({
+        message: "Password must contain at least one lowercase letter",
+      });
+    }
+
+    if (!/(?=.*[A-Z])/.test(password)) {
+      return res.status(400).json({
+        message: "Password must contain at least one uppercase letter",
+      });
+    }
+
+    if (!/(?=.*\d)/.test(password)) {
+      return res.status(400).json({ message: "Password must contain at least one number" });
+    }
+
+    const existingEmail = await User.findOne({ email: email.toLowerCase() });
+    if (existingEmail) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const password_hash = await bcrypt.hash(password, salt);
+
+    const newUser = new User({
+      username,
+      email: email.toLowerCase(),
+      password_hash,
+      full_name,
+      phone: phone || "",
+      gender: gender || "other",
+      birth_day: birth_day || null,
+      status: "active",
+      role: "user",
+    });
+
+    await newUser.save();
+
+    const token = jwt.sign(
+      {
+        userId: newUser._id,
+        email: newUser.email,
+        role: newUser.role,
+      },
+      process.env.JWT_SECRET || "moviefly-secret-key-2026",
+      { expiresIn: "30d" }
+    );
+
+    const userResponse = newUser.toObject();
+    delete userResponse.password_hash;
+
+    return res.status(201).json({
+      message: "Registration successful",
+      token,
+      user: userResponse,
+    });
+  } catch (error) {
+    console.error("❌ Registration Error:", error);
+
+    if (error.code === 11000) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+    return res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
+
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -46,6 +130,7 @@ const loginUser = async (req, res) => {
       { 
         userId: user._id,
         email: user.email,
+        role: user.role,
       },
       process.env.JWT_SECRET || "moviefly-secret-key-2026",
       { expiresIn: "30d" }
@@ -145,6 +230,7 @@ const createUser = async (req, res) => {
       gender: gender || "other",
       birth_day: birth_day || null,
       status: "active",
+      role: "user",
     };
 
     if (clerkId) {
@@ -251,6 +337,7 @@ const deleteUserByEmail = async (req, res) => {
 
 module.exports = {
   getUser,
+  registerUser,
   loginUser,
   createUser,
   syncClerkUser,

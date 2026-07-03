@@ -18,17 +18,24 @@ class ApiService {
     options?: RequestInit
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
+    const token = localStorage.getItem("token");
 
     try {
       const response = await fetch(url, {
         ...options,
         headers: {
           "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
           ...options?.headers,
         },
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          window.location.href = "/login";
+        }
         const error = await response.json();
         throw new Error(error.message || `HTTP error! status: ${response.status}`);
       }

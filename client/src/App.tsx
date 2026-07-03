@@ -1,5 +1,6 @@
 import { Route, Routes, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { useUser } from "@clerk/clerk-react";
 import Header from "./components/Layout/Header";
 import Home from "./pages/Home";
 import Movies from "./pages/Movies";
@@ -16,6 +17,7 @@ import MovieDetailMovieFly from "./pages/MovieDetailMovieFly";
 
 const App = () => {
   const isAdminRoute = useLocation().pathname.startsWith("/admin");
+  const { user, isLoaded } = useUser();
 
   useEffect(() => {
     const testConnection = async () => {
@@ -44,6 +46,40 @@ const App = () => {
     };
     testConnection();
   }, []);
+
+  useEffect(() => {
+    const syncUserToBackend = async () => {
+      if (!user) return;
+
+      try {
+        const email = user.emailAddresses[0]?.emailAddress;
+        const username = user.username || email?.split("@")[0] || `user_${user.id.substring(0, 8)}`;
+        const full_name = `${user.firstName || ""} ${user.lastName || ""}`.trim() || username;
+
+        await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:3000/api"}/users/sync`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            clerkId: user.id,
+            username,
+            email,
+            full_name,
+            avatar_url: user.imageUrl || "",
+          }),
+        });
+
+        console.log("✅ User synced to backend");
+      } catch (error) {
+        console.error("❌ Failed to sync user:", error);
+      }
+    };
+
+    if (isLoaded && user) {
+      syncUserToBackend();
+    }
+  }, [user, isLoaded]);
 
   return (
     <>
