@@ -9,7 +9,7 @@ import MyBookings from "./pages/MyBookings";
 import Favourite from "./pages/Favourite";
 import Schedule from "./pages/Schedule";
 import TestConnection from "./pages/TestConnection";
-import AdminDashboard from "./pages/AdminDashboard";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import { RefreshRoleButton } from "./components/RefreshRoleButton";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
@@ -28,7 +28,7 @@ const App = () => {
     const testConnection = async () => {
       try {
         const isConnected = await api.testConnection();
-        
+
         if (isConnected) {
           toast.success("Kết nối server thành công!", {
             duration: 3000,
@@ -42,10 +42,14 @@ const App = () => {
           console.error("❌ Server connection failed");
         }
       } catch (error) {
-        toast.error("❌ Lỗi kết nối server: " + (error instanceof Error ? error.message : "Unknown error"), {
-          duration: 5000,
-          position: "top-right",
-        });
+        toast.error(
+          "❌ Lỗi kết nối server: " +
+            (error instanceof Error ? error.message : "Unknown error"),
+          {
+            duration: 5000,
+            position: "top-right",
+          },
+        );
         console.error("❌ Connection error:", error);
       }
     };
@@ -58,8 +62,12 @@ const App = () => {
 
       try {
         const email = user.emailAddresses[0]?.emailAddress;
-        const username = user.username || email?.split("@")[0] || `user_${user.id.substring(0, 8)}`;
-        const full_name = `${user.firstName || ""} ${user.lastName || ""}`.trim() || username;
+        const username =
+          user.username ||
+          email?.split("@")[0] ||
+          `user_${user.id.substring(0, 8)}`;
+        const full_name =
+          `${user.firstName || ""} ${user.lastName || ""}`.trim() || username;
 
         console.log("🔄 Syncing user to backend...");
 
@@ -78,13 +86,9 @@ const App = () => {
         });
 
         const syncData = await syncResponse.json();
-        console.log("📦 Sync response:", syncData);
-        
         if (syncData.user?.role) {
           setUserRole(syncData.user.role);
           localStorage.setItem("userRole", syncData.user.role);
-          console.log("✅ User synced to backend, role:", syncData.user.role);
-          console.log("💾 Role saved to localStorage:", localStorage.getItem("userRole"));
         } else {
           console.warn("⚠️ No role in sync response");
         }
