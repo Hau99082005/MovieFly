@@ -48,6 +48,12 @@ const WatchMovie = () => {
   const [volume, setVolume] = useState(0.7);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+
+  const extractMovieId = (idParam: string | undefined) => {
+    if (!idParam) return null;
+    const parts = idParam.split('-');
+    return parts[parts.length - 1];
+  };
   const [showControls, setShowControls] = useState(true);
   const [selectedQuality, setSelectedQuality] = useState<number | null>(null);
   const [showQualityMenu, setShowQualityMenu] = useState(false);
@@ -126,7 +132,10 @@ const WatchMovie = () => {
 
   const fetchVideoSources = async () => {
     try {
-      const response = await fetch(`${API_URL}/video-sources/movie/${id}`);
+      const movieId = extractMovieId(id);
+      if (!movieId) return;
+
+      const response = await fetch(`${API_URL}/video-sources/movie/${movieId}`);
       if (response.ok) {
         const result = await response.json();
         const sources = result.data || [];
@@ -259,7 +268,10 @@ const WatchMovie = () => {
         onMouseLeave={() => isPlaying && setShowControls(false)}
       >
         <button
-          onClick={() => navigate(`/movie/${id}`)}
+          onClick={() => {
+            const movieId = extractMovieId(id);
+            if (movieId) navigate(`/movie/${movieId}`);
+          }}
           className="absolute top-24 left-4 z-50 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors md:top-4"
         >
           <ChevronLeft className="w-6 h-6" />

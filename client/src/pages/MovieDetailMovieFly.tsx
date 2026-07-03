@@ -319,7 +319,16 @@ const MovieDetailMovieFly = () => {
                 border: "none",
                 borderRadius: "5px",
               }}
-              onClick={() => navigate(`/watch/${movie._id}`)}
+              onClick={() => {
+                const slug = movie.title
+                  .toLowerCase()
+                  .normalize("NFD")
+                  .replace(/[\u0300-\u036f]/g, "")
+                  .replace(/đ/g, "d")
+                  .replace(/[^a-z0-9]+/g, "-")
+                  .replace(/^-+|-+$/g, "");
+                navigate(`/watch/${slug}-${movie._id}`);
+              }}
               className="flex items-center gap-2 px-8 py-3 bg-white text-black font-bold rounded hover:bg-gray-200 transition-all"
             >
               <PlayIcon className="w-6 h-6 fill-current" />
