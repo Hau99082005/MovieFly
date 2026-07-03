@@ -11,6 +11,7 @@ import Schedule from "./pages/Schedule";
 import TestConnection from "./pages/TestConnection";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import BannersPage from "./components/admin/banners/page";
+import UsersPage from "./components/admin/users/page";
 import { RefreshRoleButton } from "./components/RefreshRoleButton";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
@@ -90,6 +91,9 @@ const App = () => {
         if (syncData.user?.role) {
           setUserRole(syncData.user.role);
           localStorage.setItem("userRole", syncData.user.role);
+          if (syncData.token) {
+            localStorage.setItem("authToken", syncData.token);
+          }
         } else {
           console.warn("⚠️ No role in sync response");
         }
@@ -121,6 +125,7 @@ const App = () => {
         <Route path="/test-connection" element={<TestConnection />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/banners" element={<BannersPage />} />
+        <Route path="/admin/users" element={<UsersPage />} />
       </Routes>
       {!isAdminRoute && <Footer />}
       {user && <RefreshRoleButton />}

@@ -295,21 +295,8 @@ const syncClerkUser = async (req, res) => {
       user.full_name = full_name || user.full_name;
       user.avatar_url = avatar_url || user.avatar_url;
       await user.save();
-
-      return res.status(200).json({ 
-        message: "User updated successfully", 
-        user: {
-          _id: user._id,
-          username: user.username,
-          email: user.email,
-          full_name: user.full_name,
-          avatar_url: user.avatar_url,
-          role: user.role,
-          status: user.status,
-        }
-      });
     } else {
-      const newUser = new User({
+      user = new User({
         clerkId,
         username: username || email?.split("@")[0],
         email,
@@ -318,21 +305,32 @@ const syncClerkUser = async (req, res) => {
         role: "user",
         status: "active",
       });
-      await newUser.save();
-
-      return res.status(201).json({ 
-        message: "User synced successfully", 
-        user: {
-          _id: newUser._id,
-          username: newUser.username,
-          email: newUser.email,
-          full_name: newUser.full_name,
-          avatar_url: newUser.avatar_url,
-          role: newUser.role,
-          status: newUser.status,
-        }
-      });
+      await user.save();
     }
+
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        email: user.email,
+        role: user.role,
+      },
+      process.env.JWT_SECRET || "moviefly-secret-key-2026",
+      { expiresIn: "30d" }
+    );
+
+    return res.status(user.isNew ? 201 : 200).json({ 
+      message: user.isNew ? "User synced successfully" : "User updated successfully", 
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        full_name: user.full_name,
+        avatar_url: user.avatar_url,
+        role: user.role,
+        status: user.status,
+      },
+      token,
+    });
   } catch (error) {
     return res.status(500).json({ message: "Server Error", error: error.message });
   }
@@ -390,6 +388,123 @@ const deleteUserByEmail = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  try {
+    const { role, status, search } = req.query;
+    
+    let filter = {};
+    
+    if (role) {
+      filter.role = role;
+    }
+    
+    if (status) {
+      filter.status = status;
+    }
+    
+    if (search) {
+      filter.$or = [
+        { username: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { full_name: { $regex: search, $options: "i" } },
+      ];
+    }
+    
+    const users = await User.find(filter)
+      .select("-password_hash")
+      .sort({ createdAt: -1 });
+    
+    return res.status(200).json({
+      users,
+      total: users.length,
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server Error", error: error.message });
+  }
+};
+
+const updateUserRole = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { role } = req.body;
+    
+    if (!role || !["user", "admin", "moderator"].includes(role)) {
+      return res.status(400).json({ message: "Invalid role" });
+    }
+    
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { role },
+      { new: true }
+    ).select("-password_hash");
+    
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    return res.status(200).json({
+      message: "User role updated successfully",
+      user,
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server Error", error: error.message });
+  }
+};
+
+const updateUserStatus = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { status } = req.body;
+    
+    if (!status || !["active", "inactive", "banned"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+    
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { status },
+      { new: true }
+    ).select("-password_hash");
+    
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    return res.status(200).json({
+      message: "User status updated successfully",
+      user,
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server Error", error: error.message });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    const deletedUser = await User.findByIdAndDelete(userId);
+    
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    return res.status(200).json({
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server Error", error: error.message });
+  }
+};
+
 module.exports = {
   getUser,
   registerUser,
@@ -398,4 +513,8 @@ module.exports = {
   syncClerkUser,
   getUserRole,
   deleteUserByEmail,
+  getAllUsers,
+  updateUserRole,
+  updateUserStatus,
+  deleteUser,
 };
