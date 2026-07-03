@@ -25,6 +25,7 @@ const userSubscriptionsRouter = require("./router/user_subscriptions");
 const videoSourceRouter = require("./router/video_source");
 const paymentsMethodRouter = require("./router/payments_method");
 const transactionsRouter = require("./router/transactions");
+const settingsRouter = require("./router/settings");
 
 dbConnect();
 
@@ -71,6 +72,7 @@ app.use("/api/user-subscriptions", userSubscriptionsRouter);
 app.use("/api/video-sources", videoSourceRouter);
 app.use("/api/payments-method", paymentsMethodRouter);
 app.use("/api/transactions", transactionsRouter);
+app.use("/api/settings", settingsRouter);
 app.get("/", (req, res) => {
   console.log("📡 Root endpoint accessed");
   res.json({ message: "MovieFly API Server" });

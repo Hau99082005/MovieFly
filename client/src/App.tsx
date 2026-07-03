@@ -23,6 +23,8 @@ import Footer from "./components/Layout/Footer";
 import { api } from "./lib/api";
 import MovieDetailMovieFly from "./pages/MovieDetailMovieFly";
 import WatchMovie from "./pages/WatchMovie";
+import CommemtsPage from "./components/admin/comments/page";
+import SettingsPage from "./components/admin/settings/page";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
@@ -136,6 +138,8 @@ const App = () => {
         <Route path="/admin/videos" element={<VideosPage />} />
         <Route path="/admin/genres" element={<GenresPage />} />
         <Route path="/admin/actors" element={<ActorsPage />} />
+        <Route path="/admin/comments" element={<CommemtsPage />} />
+        <Route path="/admin/settings" element={<SettingsPage />} />
       </Routes>
       {!isAdminRoute && <Footer />}
       {user && <RefreshRoleButton />}

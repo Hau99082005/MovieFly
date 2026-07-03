@@ -5,7 +5,6 @@ import {
   LayoutDashboard,
   Film,
   Users,
-  Tv,
   Tag,
   Star,
   MessageSquare,
@@ -63,7 +62,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
     { label: "Quản lý Phim", icon: Film, path: "/admin/movies" },
     { label: "Quản lý User", icon: Users, path: "/admin/users" },
-    { label: "Phim Bộ", icon: Tv, path: "/admin/series" },
+    // { label: "Phim Bộ", icon: Tv, path: "/admin/series" },
     { label: "Banner", icon: Image, path: "/admin/banners" },
     { label: "Thể loại", icon: Tag, path: "/admin/genres" },
     { label: "Diễn viên", icon: Star, path: "/admin/actors" },
@@ -242,7 +241,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </nav>
 
             <div className="mt-6 space-y-1">
-              <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-zinc-800 transition-colors">
+              <button
+                onClick={() => navigate("/admin/settings")}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-zinc-800 transition-colors"
+              >
                 <Settings className="w-5 h-5" />
                 <span className="font-medium text-sm flex-1 text-left">
                   Cài đặt
