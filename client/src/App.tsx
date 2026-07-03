@@ -12,6 +12,8 @@ import TestConnection from "./pages/TestConnection";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import BannersPage from "./components/admin/banners/page";
 import UsersPage from "./components/admin/users/page";
+import MoviesPage from "./components/admin/movies/page";
+import VideosPage from "./components/admin/videos/page";
 import { RefreshRoleButton } from "./components/RefreshRoleButton";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
@@ -126,6 +128,8 @@ const App = () => {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/banners" element={<BannersPage />} />
         <Route path="/admin/users" element={<UsersPage />} />
+        <Route path="/admin/movies" element={<MoviesPage />} />
+        <Route path="/admin/videos" element={<VideosPage />} />
       </Routes>
       {!isAdminRoute && <Footer />}
       {user && <RefreshRoleButton />}
