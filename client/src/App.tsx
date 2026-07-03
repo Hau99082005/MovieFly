@@ -10,6 +10,7 @@ import Favourite from "./pages/Favourite";
 import Schedule from "./pages/Schedule";
 import TestConnection from "./pages/TestConnection";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import BannersPage from "./components/admin/banners/page";
 import { RefreshRoleButton } from "./components/RefreshRoleButton";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
@@ -119,6 +120,7 @@ const App = () => {
         <Route path="/schedule" element={<Schedule />} />
         <Route path="/test-connection" element={<TestConnection />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/banners" element={<BannersPage />} />
       </Routes>
       {!isAdminRoute && <Footer />}
       {user && <RefreshRoleButton />}
