@@ -204,7 +204,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           className={`fixed left-0 top-0 h-full bg-zinc-900 border-r border-zinc-800 transition-all duration-300 z-40 ${isSidebarOpen ? "w-64" : "w-0"} overflow-hidden flex flex-col`}
         >
           <div className="p-4 border-b border-zinc-800 flex items-center gap-3">
-            <button 
+            <button
               onClick={() => navigate("/")}
               className="hover:opacity-80 transition-opacity"
               title="Về trang chủ"

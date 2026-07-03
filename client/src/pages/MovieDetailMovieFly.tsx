@@ -319,7 +319,7 @@ const MovieDetailMovieFly = () => {
                 border: "none",
                 borderRadius: "5px",
               }}
-              onClick={() => movie.trailer_url && setShowTrailer(true)}
+              onClick={() => navigate(`/watch/${movie._id}`)}
               className="flex items-center gap-2 px-8 py-3 bg-white text-black font-bold rounded hover:bg-gray-200 transition-all"
             >
               <PlayIcon className="w-6 h-6 fill-current" />
@@ -561,7 +561,7 @@ const MovieDetailMovieFly = () => {
                 letterSpacing: "0.02em",
               }}
             >
-              Video liên quan
+              Trailer
             </h2>
             <div
               className="relative w-full md:w-80 cursor-pointer group"

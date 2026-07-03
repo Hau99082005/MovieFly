@@ -10,6 +10,7 @@ import {
   Film,
   Tv,
   HardDrive,
+  Loader2,
 } from "lucide-react";
 import AdminLayout from "../../../pages/admin/AdminLayout";
 
@@ -44,6 +45,7 @@ interface Movie {
 }
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+const CHUNK_SIZE = 5 * 1024 * 1024;
 
 export default function VideosPage() {
   const [videos, setVideos] = useState<VideoSource[]>([]);
@@ -62,6 +64,10 @@ export default function VideosPage() {
     is_default: false,
   });
   const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [currentChunk, setCurrentChunk] = useState(0);
+  const [totalChunks, setTotalChunks] = useState(0);
 
   useEffect(() => {
     fetchVideos();
@@ -107,6 +113,9 @@ export default function VideosPage() {
       is_default: false,
     });
     setVideoFile(null);
+    setUploadProgress(0);
+    setCurrentChunk(0);
+    setTotalChunks(0);
     setIsCreateModalOpen(true);
   };
 
@@ -120,7 +129,44 @@ export default function VideosPage() {
       is_default: video.is_default,
     });
     setVideoFile(null);
+    setUploadProgress(0);
     setIsEditModalOpen(true);
+  };
+
+  const uploadVideoInChunks = async (
+    file: File,
+  ): Promise<{ uploadId: string; totalChunks: number }> => {
+    const chunks = Math.ceil(file.size / CHUNK_SIZE);
+    setTotalChunks(chunks);
+    const uploadId = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
+
+    for (let chunkIndex = 0; chunkIndex < chunks; chunkIndex++) {
+      const start = chunkIndex * CHUNK_SIZE;
+      const end = Math.min(start + CHUNK_SIZE, file.size);
+      const chunk = file.slice(start, end);
+
+      const chunkFormData = new FormData();
+      chunkFormData.append("chunk", chunk);
+      chunkFormData.append("chunkIndex", chunkIndex.toString());
+      chunkFormData.append("totalChunks", chunks.toString());
+      chunkFormData.append("uploadId", uploadId);
+      chunkFormData.append("fileName", file.name);
+
+      const response = await fetch(`${API_URL}/video-sources/upload-chunk`, {
+        method: "POST",
+        body: chunkFormData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Chunk ${chunkIndex + 1} upload failed`);
+      }
+
+      setCurrentChunk(chunkIndex + 1);
+      const progress = Math.round(((chunkIndex + 1) / chunks) * 100);
+      setUploadProgress(progress);
+    }
+
+    return { uploadId, totalChunks: chunks };
   };
 
   const handleSubmit = async () => {
@@ -134,42 +180,76 @@ export default function VideosPage() {
       return;
     }
 
+    setIsUploading(true);
+    setUploadProgress(0);
+
     try {
-      const formDataToSend = new FormData();
-
-      formDataToSend.append("movieId", formData.movieId);
-      formDataToSend.append("quality", formData.quality.toString());
-      formDataToSend.append("format", formData.format);
-      formDataToSend.append("cdn_region", formData.cdn_region);
-      formDataToSend.append("is_default", formData.is_default.toString());
-
       if (videoFile) {
-        formDataToSend.append("video", videoFile);
-      }
+        const { uploadId, totalChunks: chunks } =
+          await uploadVideoInChunks(videoFile);
 
-      const url = editingVideo
-        ? `${API_URL}/video-sources/${editingVideo._id}`
-        : `${API_URL}/video-sources`;
-      const method = editingVideo ? "PUT" : "POST";
+        const finalizeData = {
+          uploadId: uploadId,
+          fileName: videoFile.name,
+          totalChunks: chunks,
+          movieId: formData.movieId,
+          quality: formData.quality,
+          format: formData.format,
+          cdn_region: formData.cdn_region,
+          is_default: formData.is_default,
+        };
 
-      const response = await fetch(url, {
-        method,
-        body: formDataToSend,
-      });
+        const response = await fetch(
+          `${API_URL}/video-sources/finalize-upload`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(finalizeData),
+          },
+        );
 
-      if (response.ok) {
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || "Không thể hoàn tất upload");
+        }
+
         await fetchVideos();
         setIsCreateModalOpen(false);
-        setIsEditModalOpen(false);
-        alert(
-          editingVideo ? "Cập nhật video thành công" : "Thêm video thành công",
+        alert("Thêm video thành công");
+      } else if (editingVideo) {
+        const updateFormData = new FormData();
+        updateFormData.append("movieId", formData.movieId);
+        updateFormData.append("quality", formData.quality.toString());
+        updateFormData.append("format", formData.format);
+        updateFormData.append("cdn_region", formData.cdn_region);
+        updateFormData.append("is_default", formData.is_default.toString());
+
+        const response = await fetch(
+          `${API_URL}/video-sources/${editingVideo._id}`,
+          {
+            method: "PUT",
+            body: updateFormData,
+          },
         );
-      } else {
-        const error = await response.json();
-        alert(error.message || "Có lỗi xảy ra");
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || "Không thể cập nhật video");
+        }
+
+        await fetchVideos();
+        setIsEditModalOpen(false);
+        alert("Cập nhật video thành công");
       }
-    } catch (error) {
-      alert("Có lỗi xảy ra");
+    } catch (error: any) {
+      alert(error.message || "Có lỗi xảy ra khi xử lý video");
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
+      setCurrentChunk(0);
+      setTotalChunks(0);
     }
   };
 
@@ -229,7 +309,7 @@ export default function VideosPage() {
           <div>
             <h1 className="text-2xl font-semibold text-white">Quản lý Video</h1>
             <p className="text-gray-400 text-sm mt-1">
-              Quản lý nguồn video cho phim
+              Quản lý nguồn video cho phim (Chunk Upload)
             </p>
           </div>
           <button
@@ -433,10 +513,13 @@ export default function VideosPage() {
               </h2>
               <button
                 onClick={() => {
-                  setIsCreateModalOpen(false);
-                  setIsEditModalOpen(false);
+                  if (!isUploading) {
+                    setIsCreateModalOpen(false);
+                    setIsEditModalOpen(false);
+                  }
                 }}
                 className="p-1 hover:bg-zinc-800 rounded transition-colors"
+                disabled={isUploading}
               >
                 <X className="w-5 h-5 text-gray-400" />
               </button>
@@ -453,6 +536,7 @@ export default function VideosPage() {
                     setFormData({ ...formData, movieId: e.target.value })
                   }
                   className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg focus:outline-none focus:border-zinc-600 text-white text-sm"
+                  disabled={isUploading}
                 >
                   <option value="">Chọn phim</option>
                   {movies.map((movie) => (
@@ -477,6 +561,7 @@ export default function VideosPage() {
                       })
                     }
                     className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg focus:outline-none focus:border-zinc-600 text-white text-sm"
+                    disabled={isUploading}
                   >
                     <option value="360">360p</option>
                     <option value="480">480p</option>
@@ -497,6 +582,7 @@ export default function VideosPage() {
                       setFormData({ ...formData, format: e.target.value })
                     }
                     className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg focus:outline-none focus:border-zinc-600 text-white text-sm"
+                    disabled={isUploading}
                   >
                     <option value="mp4">MP4</option>
                     <option value="mkv">MKV</option>
@@ -504,23 +590,6 @@ export default function VideosPage() {
                     <option value="avi">AVI</option>
                   </select>
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2 text-gray-300">
-                  Vùng CDN
-                </label>
-                <select
-                  value={formData.cdn_region}
-                  onChange={(e) =>
-                    setFormData({ ...formData, cdn_region: e.target.value })
-                  }
-                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg focus:outline-none focus:border-zinc-600 text-white text-sm"
-                >
-                  <option value="asia">Asia</option>
-                  <option value="europe">Europe</option>
-                  <option value="us">US</option>
-                </select>
               </div>
 
               <div>
@@ -535,10 +604,11 @@ export default function VideosPage() {
                     onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
                     className="hidden"
                     id="video-upload"
+                    disabled={isUploading}
                   />
                   <label
                     htmlFor="video-upload"
-                    className="cursor-pointer flex flex-col items-center"
+                    className={`flex flex-col items-center ${isUploading ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
                   >
                     <Upload className="w-10 h-10 text-gray-500 mb-2" />
                     <span className="text-gray-400 text-sm">
@@ -553,6 +623,26 @@ export default function VideosPage() {
                 </div>
               </div>
 
+              {isUploading && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-400">Đang upload...</span>
+                    <span className="text-white font-medium">
+                      {uploadProgress}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-zinc-800 rounded-full h-2 overflow-hidden">
+                    <div
+                      className="bg-blue-600 h-full transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 text-center">
+                    Chunk {currentChunk}/{totalChunks} - Mỗi chunk 5MB
+                  </p>
+                </div>
+              )}
+
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -561,6 +651,7 @@ export default function VideosPage() {
                     setFormData({ ...formData, is_default: e.target.checked })
                   }
                   className="w-4 h-4 rounded border-zinc-700 bg-zinc-800 text-blue-600 focus:ring-0"
+                  disabled={isUploading}
                 />
                 <span className="text-sm text-gray-300">
                   Đặt làm video mặc định
@@ -575,14 +666,23 @@ export default function VideosPage() {
                   setIsEditModalOpen(false);
                 }}
                 className="flex-1 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors text-white text-sm font-medium"
+                disabled={isUploading}
               >
                 Hủy
               </button>
               <button
                 onClick={handleSubmit}
-                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-white text-sm font-medium"
+                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                disabled={isUploading}
               >
-                {editingVideo ? "Cập nhật" : "Thêm"}
+                {isUploading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Đang upload...
+                  </>
+                ) : (
+                  <>{editingVideo ? "Cập nhật" : "Thêm"}</>
+                )}
               </button>
             </div>
           </div>

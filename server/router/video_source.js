@@ -12,12 +12,14 @@ const {
   deleteVideoSource,
   deleteVideoSourcesByMovieId,
   deleteVideoSourcesByEpisodeId,
+  uploadChunk,
+  finalizeChunkUpload,
 } = require("../controllers/video_source");
 
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
-  limits: { fileSize: 500 * 1024 * 1024 },
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowedFormats = [
       "video/mp4",
@@ -29,6 +31,7 @@ const upload = multer({
       "video/webm",
       "video/mpeg",
       "video/3gpp",
+      "application/octet-stream",
     ];
     if (allowedFormats.includes(file.mimetype)) {
       cb(null, true);
@@ -44,6 +47,8 @@ router.get("/quality/:quality", getVideoSourcesByQuality);
 router.get("/:id", getVideoSourceById);
 router.get("/movie/:movieId", getVideoSourcesByMovieId);
 router.get("/episode/:episodeId", getVideoSourcesByEpisodeId);
+router.post("/upload-chunk", upload.single("chunk"), uploadChunk);
+router.post("/finalize-upload", finalizeChunkUpload);
 router.post("/", upload.single("video"), createVideoSource);
 router.put("/:id", upload.single("video"), updateVideoSource);
 router.delete("/:id", deleteVideoSource);
