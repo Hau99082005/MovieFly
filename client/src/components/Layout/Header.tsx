@@ -91,6 +91,7 @@ const Header = ({ userRole }: HeaderProps) => {
           </div>
 
           <div className="hidden lg:flex items-center gap-5 shrink-0">
+            <Link to="/subscription-plans">
             <button
               className="px-4 py-3 bg-primary hover:bg-primary/50 transition-colors rounded text-sm font-bold text-black hover:text-white"
               style={{
@@ -105,6 +106,7 @@ const Header = ({ userRole }: HeaderProps) => {
             >
               ĐĂNG KÝ GÓI
             </button>
+            </Link>
             <span
               className="text-sm font-medium text-white hover:text-white/90 cursor-pointer transition-colors"
               style={{
@@ -291,9 +293,11 @@ const Header = ({ userRole }: HeaderProps) => {
         </div>
 
         <div className="mt-auto flex flex-col gap-3 pt-6 border-t border-white/10">
+          <Link to="/subscription-plans" onClick={closeMenu}>
           <button className="w-full py-3 bg-primary hover:bg-primary/50 transition-colors rounded-lg text-sm font-bold text-black">
             ĐĂNG KÝ GÓI
           </button>
+          </Link>
           <button className="flex items-center justify-center gap-2 w-full py-3 rounded-lg text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-all duration-200">
             <Search className="w-4 h-4" />
             Tìm kiếm
