@@ -1,6 +1,18 @@
 const router = require("express").Router();
 
-const { getUser, registerUser, loginUser, createUser, syncClerkUser, getUserRole, deleteUserByEmail, getAllUsers, updateUserRole, updateUserStatus, deleteUser } = require("../controllers/user");
+const {
+  getUser,
+  registerUser,
+  loginUser,
+  createUser,
+  syncClerkUser,
+  getUserRole,
+  deleteUserByEmail,
+  getAllUsers,
+  updateUserRole,
+  updateUserStatus,
+  deleteUser,
+} = require("../controllers/user");
 const { authMiddleware, adminMiddleware } = require("../middleware/auth");
 
 router.get("/test", (req, res) => {
@@ -16,7 +28,12 @@ router.delete("/delete", authMiddleware, adminMiddleware, deleteUserByEmail);
 router.get("/me", authMiddleware, getUser);
 router.get("/", authMiddleware, adminMiddleware, getAllUsers);
 router.put("/:userId/role", authMiddleware, adminMiddleware, updateUserRole);
-router.put("/:userId/status", authMiddleware, adminMiddleware, updateUserStatus);
+router.put(
+  "/:userId/status",
+  authMiddleware,
+  adminMiddleware,
+  updateUserStatus,
+);
 router.delete("/:userId", authMiddleware, adminMiddleware, deleteUser);
 
 module.exports = router;

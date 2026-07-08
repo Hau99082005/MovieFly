@@ -33,6 +33,7 @@ const App = () => {
   const isAdminRoute = useLocation().pathname.startsWith("/admin");
   const { user, isLoaded } = useUser();
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [mongoUserId, setMongoUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const testConnection = async () => {
@@ -99,8 +100,14 @@ const App = () => {
         if (syncData.user?.role) {
           setUserRole(syncData.user.role);
           localStorage.setItem("userRole", syncData.user.role);
+          // Lưu MongoDB _id để dùng cho notification hook
+          if (syncData.user?._id) {
+            setMongoUserId(syncData.user._id);
+            localStorage.setItem("mongoUserId", syncData.user._id);
+          }
           if (syncData.token) {
             localStorage.setItem("authToken", syncData.token);
+            localStorage.setItem("token", syncData.token);
           }
         } else {
           console.warn("⚠️ No role in sync response");
@@ -114,14 +121,16 @@ const App = () => {
       syncUserToBackend();
     } else if (!user) {
       setUserRole(null);
+      setMongoUserId(null);
       localStorage.removeItem("userRole");
+      localStorage.removeItem("mongoUserId");
     }
   }, [user, isLoaded]);
 
   return (
     <>
       <Toaster />
-      {!isAdminRoute && <Header userRole={userRole} />}
+      {!isAdminRoute && <Header userRole={userRole} mongoUserId={mongoUserId} />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/movies" element={<Movies />} />

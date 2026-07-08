@@ -23,6 +23,7 @@ const getAllMovies = async (req, res) => {
       type,
       is_featured,
       is_free,
+      search,
     } = req.query;
 
     const filter = {};
@@ -30,6 +31,10 @@ const getAllMovies = async (req, res) => {
     if (type) filter.type = type;
     if (is_featured !== undefined) filter.is_featured = is_featured === "true";
     if (is_free !== undefined) filter.is_free = is_free === "true";
+    if (search && search.trim()) {
+      const regex = new RegExp(search.trim(), "i");
+      filter.$or = [{ title: regex }, { original_title: regex }];
+    }
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
