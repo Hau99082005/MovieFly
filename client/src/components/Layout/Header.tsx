@@ -109,6 +109,7 @@ const Header = ({ userRole, mongoUserId }: HeaderProps) => {
           </div>
 
           <div className="hidden lg:flex items-center gap-5 shrink-0">
+            <Link to="/subscription-plans">
             <button
               className="px-4 py-3 bg-primary hover:bg-primary/50 transition-colors rounded text-sm font-bold text-black hover:text-white"
               style={{
@@ -123,6 +124,7 @@ const Header = ({ userRole, mongoUserId }: HeaderProps) => {
             >
               ĐĂNG KÝ GÓI
             </button>
+            </Link>
             <span
               className="text-sm font-medium text-white hover:text-white/90 cursor-pointer transition-colors"
               style={{
@@ -341,6 +343,7 @@ const Header = ({ userRole, mongoUserId }: HeaderProps) => {
         </div>
 
         <div className="mt-auto flex flex-col gap-3 pt-6 border-t border-white/10">
+          <Link to="/subscription-plans" onClick={closeMenu}>
           <button className="w-full py-3 bg-primary hover:bg-primary/50 transition-colors rounded-lg text-sm font-bold text-black">
             ĐĂNG KÝ GÓI
           </button>
