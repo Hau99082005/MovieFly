@@ -3,7 +3,10 @@ const User = require("../models/user");
 
 const authMiddleware = async (req, res, next) => {
   try {
-    const token = req.header("Authorization")?.replace("Bearer ", "");
+    // EventSource (SSE) không hỗ trợ custom headers → chấp nhận token từ query string
+    const token =
+      req.header("Authorization")?.replace("Bearer ", "") ||
+      req.query?.token;
 
     if (!token) {
       return res.status(401).json({ message: "Authentication required" });

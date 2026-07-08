@@ -26,6 +26,7 @@ const videoSourceRouter = require("./router/video_source");
 const paymentsMethodRouter = require("./router/payments_method");
 const transactionsRouter = require("./router/transactions");
 const settingsRouter = require("./router/settings");
+const notificationRouter = require("./router/notificationRoutes");
 
 dbConnect();
 
@@ -35,12 +36,14 @@ const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT;
 
-app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:3000"],
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:3000"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
 app.use((req, res, next) => {
   console.log(`📨 ${req.method} ${req.path}`);
@@ -73,6 +76,7 @@ app.use("/api/video-sources", videoSourceRouter);
 app.use("/api/payments-method", paymentsMethodRouter);
 app.use("/api/transactions", transactionsRouter);
 app.use("/api/settings", settingsRouter);
+app.use("/api/notifications", notificationRouter);
 app.get("/", (req, res) => {
   console.log("📡 Root endpoint accessed");
   res.json({ message: "MovieFly API Server" });
@@ -83,7 +87,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log("\n");
   console.log("=".repeat(50));
   console.log("🚀 MovieFly Server Started Successfully!");
@@ -91,11 +95,18 @@ app.listen(PORT, () => {
   console.log(`📍 Server URL: http://localhost:${PORT}`);
   console.log(`📍 API Base: http://localhost:${PORT}/api`);
   console.log(`🔗 Client URL: http://localhost:5173`);
-  console.log(`📊 MongoDB: ${process.env.MONGODB_URI ? '✅ Connected' : '❌ Not configured'}`);
+  console.log(
+    `📊 MongoDB: ${process.env.MONGODB_URI ? "✅ Connected" : "❌ Not configured"}`,
+  );
+  console.log(`📡 SSE Stream: http://localhost:${PORT}/api/notifications/stream`);
   console.log("=".repeat(50));
   console.log("\n💡 Test endpoints:");
   console.log(`  GET  http://localhost:${PORT}/`);
-  console.log(`  GET  http://localhost:${PORT}/api/payments-method`);
-  console.log(`  GET  http://localhost:${PORT}/api/transactions`);
+  console.log(`  GET  http://localhost:${PORT}/api/notifications/stream`);
+  console.log(`  GET  http://localhost:${PORT}/api/notifications/user/:userId`);
   console.log("\n🔍 Waiting for requests...\n");
 });
+
+// Tăng timeout socket để SSE connections không bị đóng sớm
+server.keepAliveTimeout = 0;
+server.headersTimeout = 0;
