@@ -1,5 +1,5 @@
 const Subtitle = require("../models/subtitles");
-const { uploadToBunny, deleteFromBunny } = require("../lib/bunnyService");
+const { uploadToCloudinary, deleteFromCloudinary } = require("../lib/cloudinaryService");
 
 const getAllSubtitles = async (req, res) => {
   try {
@@ -122,7 +122,7 @@ const createSubtitle = async (req, res) => {
       });
     }
 
-    const subtitleUpload = await uploadToBunny(
+    const subtitleUpload = await uploadToCloudinary(
       req.file.buffer,
       req.file.originalname,
       "subtitles",
@@ -190,13 +190,13 @@ const updateSubtitle = async (req, res) => {
       if (subtitle.url) {
         const oldFilePath = subtitle.url.split(".b-cdn.net/")[1];
         if (oldFilePath) {
-          await deleteFromBunny(oldFilePath).catch((err) =>
+          await deleteFromCloudinary(oldFilePath).catch((err) =>
             console.log("Delete old subtitle error:", err.message),
           );
         }
       }
 
-      const subtitleUpload = await uploadToBunny(
+      const subtitleUpload = await uploadToCloudinary(
         req.file.buffer,
         req.file.originalname,
         "subtitles",
@@ -243,7 +243,7 @@ const deleteSubtitle = async (req, res) => {
     if (subtitle.url) {
       const filePath = subtitle.url.split(".b-cdn.net/")[1];
       if (filePath) {
-        await deleteFromBunny(filePath).catch((err) =>
+        await deleteFromCloudinary(filePath).catch((err) =>
           console.log("Delete subtitle error:", err.message),
         );
       }
@@ -272,7 +272,7 @@ const deleteSubtitlesByEpisodeId = async (req, res) => {
       if (subtitle.url) {
         const filePath = subtitle.url.split(".b-cdn.net/")[1];
         if (filePath) {
-          await deleteFromBunny(filePath).catch((err) =>
+          await deleteFromCloudinary(filePath).catch((err) =>
             console.log("Delete subtitle error:", err.message),
           );
         }

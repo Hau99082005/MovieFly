@@ -1,5 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
+import { getImageUrl } from "@/lib/imageUtils";
 
 interface Cast {
   name: string;
@@ -53,7 +54,7 @@ const CastCarousel = ({ casts }: CastCarouselProps) => {
               <div className="relative mb-4">
                 <div className="absolute inset-0 bg-primary rounded-full opacity-0 group-hover:opacity-20 scale-110 transition-all duration-300 blur-xl" />
                 <img
-                  src={cast.profile_path}
+                  src={getImageUrl(cast.profile_path)}
                   alt={cast.name}
                   className="relative rounded-full h-28 md:h-36 aspect-square object-cover shadow-xl group-hover:scale-105 group-hover:shadow-primary/50 transition-all duration-400"
                 />

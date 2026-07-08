@@ -45,19 +45,11 @@ const MoviesSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    poster_storage_zone: {
-      type: String,
-      default: "",
-    },
     backdrop_url: {
       type: String,
       default: "",
     },
     backdrop_path: {
-      type: String,
-      default: "",
-    },
-    backdrop_storage_zone: {
       type: String,
       default: "",
     },

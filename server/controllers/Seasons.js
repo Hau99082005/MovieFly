@@ -1,5 +1,5 @@
 const Season = require("../models/seasons");
-const { uploadToBunny, deleteFromBunny } = require("../lib/bunnyService");
+const { saveFileLocally, deleteFileLocally, getFileUrl } = require("../lib/localStorage");
 
 const getAllSeasons = async (req, res) => {
   try {
@@ -98,14 +98,13 @@ const createSeason = async (req, res) => {
     };
 
     if (req.file) {
-      const posterResult = await uploadToBunny(
+      const posterResult = await saveFileLocally(
         req.file.buffer,
-        req.file.originalname,
         "seasons/posters",
+        req.file.originalname,
       );
-      seasonData.poster_url = posterResult.cdnUrl;
+      seasonData.poster_url = getFileUrl(posterResult.filePath);
       seasonData.poster_path = posterResult.filePath;
-      seasonData.poster_storage_zone = posterResult.storageZone;
     }
 
     const newSeason = new Season(seasonData);
@@ -162,16 +161,15 @@ const updateSeason = async (req, res) => {
 
     if (req.file) {
       if (season.poster_path) {
-        await deleteFromBunny(season.poster_path, season.poster_storage_zone);
+        await deleteFileLocally(season.poster_path);
       }
-      const posterResult = await uploadToBunny(
+      const posterResult = await saveFileLocally(
         req.file.buffer,
-        req.file.originalname,
         "seasons/posters",
+        req.file.originalname,
       );
-      updateData.poster_url = posterResult.cdnUrl;
+      updateData.poster_url = getFileUrl(posterResult.filePath);
       updateData.poster_path = posterResult.filePath;
-      updateData.poster_storage_zone = posterResult.storageZone;
     }
 
     const updatedSeason = await Season.findByIdAndUpdate(id, updateData, {
@@ -201,7 +199,7 @@ const deleteSeason = async (req, res) => {
     }
 
     if (season.poster_path) {
-      await deleteFromBunny(season.poster_path, season.poster_storage_zone);
+      await deleteFileLocally(season.poster_path);
     }
 
     await Season.findByIdAndDelete(id);
@@ -235,7 +233,7 @@ const deleteSeasonsByMovieId = async (req, res) => {
 
     const deletePromises = seasons.map((season) => {
       if (season.poster_path) {
-        return deleteFromBunny(season.poster_path, season.poster_storage_zone);
+        return deleteFileLocally(season.poster_path);
       }
       return Promise.resolve();
     });

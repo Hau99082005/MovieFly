@@ -1,5 +1,6 @@
 const Episode = require("../models/episodes");
-const { uploadToBunny, uploadLargeFileToBunny, deleteFromBunny } = require("../lib/bunnyService");
+const { saveFileLocally, deleteFileLocally, getFileUrl } = require("../lib/localStorage");
+const { uploadLargeFileToCloudinary, deleteFromCloudinary } = require("../lib/cloudinaryService");
 const { getVideoDuration } = require("../lib/videoUtils");
 
 const getAllEpisodes = async (req, res) => {
@@ -122,15 +123,14 @@ const createEpisode = async (req, res) => {
     if (req.files) {
       if (req.files.thumbnail) {
         uploadPromises.push(
-          uploadToBunny(
+          saveFileLocally(
             req.files.thumbnail[0].buffer,
-            req.files.thumbnail[0].originalname,
-            "episodes/thumbnails"
+            "episodes/thumbnails",
+            req.files.thumbnail[0].originalname
           ).then(result => ({
             field: "thumbnail",
-            url: result.cdnUrl,
+            url: getFileUrl(result.filePath),
             path: result.filePath,
-            zone: result.storageZone,
           }))
         );
       }
@@ -140,10 +140,11 @@ const createEpisode = async (req, res) => {
 
         uploadPromises.push(
           Promise.all([
-            uploadLargeFileToBunny(
+            uploadLargeFileToCloudinary(
               videoBuffer,
               req.files.video[0].originalname,
-              "episodes/videos"
+              "episodes/videos",
+              true
             ),
             getVideoDuration(videoBuffer).catch(() => 0)
           ]).then(([uploadResult, durationMinutes]) => ({
@@ -163,7 +164,6 @@ const createEpisode = async (req, res) => {
       if (result.field === "thumbnail") {
         episodeData.thumbnailUrl = result.url;
         episodeData.thumbnail_path = result.path;
-        episodeData.thumbnail_storage_zone = result.zone;
       } else if (result.field === "video") {
         episodeData.video_url = result.url;
         episodeData.video_path = result.path;
@@ -243,19 +243,18 @@ const updateEpisode = async (req, res) => {
       if (req.files.thumbnail) {
         if (episode.thumbnail_path) {
           deletePromises.push(
-            deleteFromBunny(episode.thumbnail_path, episode.thumbnail_storage_zone)
+            deleteFileLocally(episode.thumbnail_path)
           );
         }
         uploadPromises.push(
-          uploadToBunny(
+          saveFileLocally(
             req.files.thumbnail[0].buffer,
-            req.files.thumbnail[0].originalname,
-            "episodes/thumbnails"
+            "episodes/thumbnails",
+            req.files.thumbnail[0].originalname
           ).then(result => ({
             field: "thumbnail",
-            url: result.cdnUrl,
+            url: getFileUrl(result.filePath),
             path: result.filePath,
-            zone: result.storageZone,
           }))
         );
       }
@@ -263,7 +262,7 @@ const updateEpisode = async (req, res) => {
       if (req.files.video) {
         if (episode.video_path) {
           deletePromises.push(
-            deleteFromBunny(episode.video_path, episode.video_storage_zone)
+            deleteFromCloudinary(episode.video_path, episode.video_storage_zone)
           );
         }
 
@@ -271,10 +270,11 @@ const updateEpisode = async (req, res) => {
 
         uploadPromises.push(
           Promise.all([
-            uploadLargeFileToBunny(
+            uploadLargeFileToCloudinary(
               videoBuffer,
               req.files.video[0].originalname,
-              "episodes/videos"
+              "episodes/videos",
+              true
             ),
             getVideoDuration(videoBuffer).catch(() => 0)
           ]).then(([uploadResult, durationMinutes]) => ({
@@ -296,7 +296,6 @@ const updateEpisode = async (req, res) => {
       if (result.field === "thumbnail") {
         updateData.thumbnailUrl = result.url;
         updateData.thumbnail_path = result.path;
-        updateData.thumbnail_storage_zone = result.zone;
       } else if (result.field === "video") {
         updateData.video_url = result.url;
         updateData.video_path = result.path;
@@ -339,13 +338,13 @@ const deleteEpisode = async (req, res) => {
 
     if (episode.thumbnail_path) {
       deletePromises.push(
-        deleteFromBunny(episode.thumbnail_path, episode.thumbnail_storage_zone)
+        deleteFileLocally(episode.thumbnail_path)
       );
     }
 
     if (episode.video_path) {
       deletePromises.push(
-        deleteFromBunny(episode.video_path, episode.video_storage_zone)
+        deleteFromCloudinary(episode.video_path, episode.video_storage_zone)
       );
     }
 
@@ -385,12 +384,12 @@ const deleteEpisodesBySeasonId = async (req, res) => {
     episodes.forEach(episode => {
       if (episode.thumbnail_path) {
         deletePromises.push(
-          deleteFromBunny(episode.thumbnail_path, episode.thumbnail_storage_zone)
+          deleteFileLocally(episode.thumbnail_path)
         );
       }
       if (episode.video_path) {
         deletePromises.push(
-          deleteFromBunny(episode.video_path, episode.video_storage_zone)
+          deleteFromCloudinary(episode.video_path, episode.video_storage_zone)
         );
       }
     });

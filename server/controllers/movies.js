@@ -1,5 +1,6 @@
 const Movies = require("../models/movies");
-const { uploadToBunny, uploadLargeFileToBunny, deleteFromBunny } = require("../lib/bunnyService");
+const { saveFileLocally, deleteFileLocally, getFileUrl } = require("../lib/localStorage");
+const { uploadLargeFileToCloudinary, deleteFromCloudinary } = require("../lib/cloudinaryService");
 const { getVideoDuration } = require("../lib/videoUtils");
 
 const generateSlug = (title) => {
@@ -138,30 +139,28 @@ const createMovie = async (req, res) => {
     if (req.files) {
       if (req.files.poster) {
         uploadPromises.push(
-          uploadToBunny(
+          saveFileLocally(
             req.files.poster[0].buffer,
-            req.files.poster[0].originalname,
-            "movies/posters"
+            "movies/posters",
+            req.files.poster[0].originalname
           ).then(result => ({
             field: "poster",
-            url: result.cdnUrl,
+            url: getFileUrl(result.filePath),
             path: result.filePath,
-            zone: result.storageZone,
           }))
         );
       }
 
       if (req.files.backdrop) {
         uploadPromises.push(
-          uploadToBunny(
+          saveFileLocally(
             req.files.backdrop[0].buffer,
-            req.files.backdrop[0].originalname,
-            "movies/backdrops"
+            "movies/backdrops",
+            req.files.backdrop[0].originalname
           ).then(result => ({
             field: "backdrop",
-            url: result.cdnUrl,
+            url: getFileUrl(result.filePath),
             path: result.filePath,
-            zone: result.storageZone,
           }))
         );
       }
@@ -171,10 +170,11 @@ const createMovie = async (req, res) => {
         
         uploadPromises.push(
           Promise.all([
-            uploadLargeFileToBunny(
+            uploadLargeFileToCloudinary(
               trailerBuffer,
               req.files.trailer[0].originalname,
-              "movies/trailers"
+              "movies/trailers",
+              true
             ),
             getVideoDuration(trailerBuffer).catch(() => 0)
           ]).then(([uploadResult, duration]) => ({
@@ -194,11 +194,9 @@ const createMovie = async (req, res) => {
       if (result.field === "poster") {
         movieData.poster_url = result.url;
         movieData.poster_path = result.path;
-        movieData.poster_storage_zone = result.zone;
       } else if (result.field === "backdrop") {
         movieData.backdrop_url = result.url;
         movieData.backdrop_path = result.path;
-        movieData.backdrop_storage_zone = result.zone;
       } else if (result.field === "trailer") {
         movieData.trailer_url = result.url;
         movieData.trailer_path = result.path;
@@ -293,19 +291,18 @@ const updateMovie = async (req, res) => {
       if (req.files.poster) {
         if (movie.poster_path) {
           deletePromises.push(
-            deleteFromBunny(movie.poster_path, movie.poster_storage_zone)
+            deleteFileLocally(movie.poster_path)
           );
         }
         uploadPromises.push(
-          uploadToBunny(
+          saveFileLocally(
             req.files.poster[0].buffer,
-            req.files.poster[0].originalname,
-            "movies/posters"
+            "movies/posters",
+            req.files.poster[0].originalname
           ).then(result => ({
             field: "poster",
-            url: result.cdnUrl,
+            url: getFileUrl(result.filePath),
             path: result.filePath,
-            zone: result.storageZone,
           }))
         );
       }
@@ -313,19 +310,18 @@ const updateMovie = async (req, res) => {
       if (req.files.backdrop) {
         if (movie.backdrop_path) {
           deletePromises.push(
-            deleteFromBunny(movie.backdrop_path, movie.backdrop_storage_zone)
+            deleteFileLocally(movie.backdrop_path)
           );
         }
         uploadPromises.push(
-          uploadToBunny(
+          saveFileLocally(
             req.files.backdrop[0].buffer,
-            req.files.backdrop[0].originalname,
-            "movies/backdrops"
+            "movies/backdrops",
+            req.files.backdrop[0].originalname
           ).then(result => ({
             field: "backdrop",
-            url: result.cdnUrl,
+            url: getFileUrl(result.filePath),
             path: result.filePath,
-            zone: result.storageZone,
           }))
         );
       }
@@ -333,7 +329,7 @@ const updateMovie = async (req, res) => {
       if (req.files.trailer) {
         if (movie.trailer_path) {
           deletePromises.push(
-            deleteFromBunny(movie.trailer_path, movie.trailer_storage_zone)
+            deleteFromCloudinary(movie.trailer_path, movie.trailer_storage_zone)
           );
         }
         
@@ -341,10 +337,11 @@ const updateMovie = async (req, res) => {
         
         uploadPromises.push(
           Promise.all([
-            uploadLargeFileToBunny(
+            uploadLargeFileToCloudinary(
               trailerBuffer,
               req.files.trailer[0].originalname,
-              "movies/trailers"
+              "movies/trailers",
+              true
             ),
             getVideoDuration(trailerBuffer).catch(() => 0)
           ]).then(([uploadResult, duration]) => ({
@@ -366,11 +363,9 @@ const updateMovie = async (req, res) => {
       if (result.field === "poster") {
         updateData.poster_url = result.url;
         updateData.poster_path = result.path;
-        updateData.poster_storage_zone = result.zone;
       } else if (result.field === "backdrop") {
         updateData.backdrop_url = result.url;
         updateData.backdrop_path = result.path;
-        updateData.backdrop_storage_zone = result.zone;
       } else if (result.field === "trailer") {
         updateData.trailer_url = result.url;
         updateData.trailer_path = result.path;
@@ -407,15 +402,15 @@ const deleteMovie = async (req, res) => {
     }
 
     if (movie.poster_path) {
-      await deleteFromBunny(movie.poster_path, movie.poster_storage_zone);
+      await deleteFileLocally(movie.poster_path);
     }
 
     if (movie.backdrop_path) {
-      await deleteFromBunny(movie.backdrop_path, movie.backdrop_storage_zone);
+      await deleteFileLocally(movie.backdrop_path);
     }
 
     if (movie.trailer_path) {
-      await deleteFromBunny(movie.trailer_path, movie.trailer_storage_zone);
+      await deleteFromCloudinary(movie.trailer_path, movie.trailer_storage_zone);
     }
 
     await Movies.findByIdAndDelete(id);

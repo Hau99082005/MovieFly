@@ -14,7 +14,7 @@ const bannerSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    bunny_file_path: {
+    local_file_path: {
       type: String,
       required: true,
     },

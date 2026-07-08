@@ -9,6 +9,7 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import AdminLayout from "../../../pages/admin/AdminLayout";
+import { getImageUrl } from "@/lib/imageUtils";
 
 interface Banner {
   _id: string;
@@ -96,7 +97,7 @@ export default function BannersPage() {
       is_active: banner.is_active,
     });
     setImageFile(null);
-    setImagePreview(banner.image_url);
+    setImagePreview(getImageUrl(banner.image_url));
     setIsModalOpen(true);
   };
 
@@ -293,7 +294,7 @@ export default function BannersPage() {
                     </td>
                     <td className="px-6 py-4">
                       <img
-                        src={banner.image_url}
+                        src={getImageUrl(banner.image_url)}
                         alt={banner.title}
                         className="w-40 h-24 object-cover rounded-lg shadow-md border border-zinc-700"
                       />

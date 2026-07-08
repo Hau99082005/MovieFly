@@ -1,5 +1,5 @@
 const Banner = require("../models/Banner");
-const { uploadToBunny, deleteFromBunny } = require("../lib/bunnyService");
+const { saveFileLocally, deleteFileLocally, getFileUrl } = require("../lib/localStorage");
 
 const createBanner = async (req, res) => {
   try {
@@ -13,17 +13,17 @@ const createBanner = async (req, res) => {
       return res.status(400).json({ message: "Title is required" });
     }
 
-    const uploadResult = await uploadToBunny(
+    const uploadResult = await saveFileLocally(
       req.file.buffer,
-      req.file.originalname,
       "banners",
+      req.file.originalname,
     );
 
     const newBanner = new Banner({
       title,
       description: description || "",
-      image_url: uploadResult.cdnUrl,
-      bunny_file_path: uploadResult.filePath,
+      image_url: getFileUrl(uploadResult.filePath),
+      local_file_path: uploadResult.filePath,
       link: link || "",
       order: order || 0,
       is_active: true,
@@ -56,16 +56,18 @@ const updateBanner = async (req, res) => {
     }
 
     if (req.file) {
-      await deleteFromBunny(banner.bunny_file_path);
+      if (banner.local_file_path) {
+        await deleteFileLocally(banner.local_file_path);
+      }
 
-      const uploadResult = await uploadToBunny(
+      const uploadResult = await saveFileLocally(
         req.file.buffer,
-        req.file.originalname,
         "banners",
+        req.file.originalname,
       );
 
-      banner.image_url = uploadResult.cdnUrl;
-      banner.bunny_file_path = uploadResult.filePath;
+      banner.image_url = getFileUrl(uploadResult.filePath);
+      banner.local_file_path = uploadResult.filePath;
     }
 
     if (title) banner.title = title;
@@ -144,9 +146,11 @@ const deleteBanner = async (req, res) => {
     }
 
     try {
-      await deleteFromBunny(banner.bunny_file_path);
-    } catch (bunnyError) {
-      console.error("Failed to delete from Bunny:", bunnyError.message);
+      if (banner.local_file_path) {
+        await deleteFileLocally(banner.local_file_path);
+      }
+    } catch (localError) {
+      console.error("Failed to delete local file:", localError.message);
     }
 
     await Banner.findByIdAndDelete(id);

@@ -1,5 +1,5 @@
 const PaymentMethod = require("../models/payments_method");
-const { uploadToBunny, deleteFromBunny } = require("../lib/bunnyService");
+const { saveFileLocally, deleteFileLocally, getFileUrl } = require("../lib/localStorage");
 
 const getAllPaymentMethods = async (req, res) => {
   try {
@@ -100,20 +100,16 @@ const createPaymentMethod = async (req, res) => {
       });
     }
 
-    const uploadResult = await uploadToBunny(
+    const uploadResult = await saveFileLocally(
       req.file.buffer,
-      req.file.originalname,
       "payment-logos",
+      req.file.originalname,
     );
-
-    if (!uploadResult.success) {
-      return res.status(500).json({ message: "Failed to upload logo to CDN" });
-    }
 
     const newPaymentMethod = new PaymentMethod({
       code,
       name,
-      logo_url: uploadResult.cdnUrl,
+      logo_url: getFileUrl(uploadResult.filePath),
       is_active: is_active !== undefined ? is_active : true,
     });
 
@@ -148,27 +144,18 @@ const updatePaymentMethod = async (req, res) => {
 
     if (req.file) {
       if (paymentMethod.logo_url) {
-        const oldFilePath = paymentMethod.logo_url.split(".b-cdn.net/")[1];
-        if (oldFilePath) {
-          await deleteFromBunny(oldFilePath).catch((err) =>
-            console.log("Failed to delete old logo:", err.message),
-          );
-        }
+        await deleteFileLocally(paymentMethod.logo_url.replace("/", "")).catch((err) =>
+          console.log("Failed to delete old logo:", err.message),
+        );
       }
 
-      const uploadResult = await uploadToBunny(
+      const uploadResult = await saveFileLocally(
         req.file.buffer,
-        req.file.originalname,
         "payment-logos",
+        req.file.originalname,
       );
 
-      if (!uploadResult.success) {
-        return res
-          .status(500)
-          .json({ message: "Failed to upload logo to CDN" });
-      }
-
-      paymentMethod.logo_url = uploadResult.cdnUrl;
+      paymentMethod.logo_url = getFileUrl(uploadResult.filePath);
     }
 
     if (code) {
@@ -215,12 +202,9 @@ const deletePaymentMethod = async (req, res) => {
     }
 
     if (paymentMethod.logo_url) {
-      const filePath = paymentMethod.logo_url.split(".b-cdn.net/")[1];
-      if (filePath) {
-        await deleteFromBunny(filePath).catch((err) =>
-          console.log("Failed to delete logo:", err.message),
-        );
-      }
+      await deleteFileLocally(paymentMethod.logo_url.replace("/", "")).catch((err) =>
+        console.log("Failed to delete logo:", err.message),
+      );
     }
 
     await PaymentMethod.findByIdAndDelete(id);

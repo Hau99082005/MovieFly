@@ -48,6 +48,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 app.use("/api/webhooks/clerk", clerkWebhookRouter);
 app.use("/api/users", userRouter);
 app.use("/api/admin", adminRouter);

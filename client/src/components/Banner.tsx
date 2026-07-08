@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { bannersApi } from "@/lib/api";
+import { getImageUrl } from "@/lib/imageUtils";
 
 interface BannerData {
   _id: string;
@@ -214,7 +215,7 @@ const Banner = () => {
             <div className="absolute inset-0 overflow-hidden">
               <img
                 key={animKey}
-                src={item.image_url}
+                src={getImageUrl(item.image_url)}
                 alt={item.title}
                 className={
                   "w-full h-full object-cover object-center " +
