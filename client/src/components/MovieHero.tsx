@@ -1,6 +1,7 @@
 import { PlayIcon, TicketIcon, HeartIcon, ClockIcon, CalendarIcon, MapPinIcon, ArrowLeftIcon } from "lucide-react";
 import timeFormat from "@/lib/timeFormat";
 import { useNavigate } from "react-router-dom";
+import { getImageUrl } from "@/lib/imageUtils";
 
 interface Cast {
   name: string;
@@ -34,7 +35,7 @@ const MovieHero = ({ movie, isFavorite, setIsFavorite, setShowTrailer }: MovieHe
   return (
     <div className="relative h-[85vh] overflow-hidden">
       <img
-        src={movie.backdrop_path}
+        src={getImageUrl(movie.backdrop_path)}
         alt={movie.title}
         className="w-full h-full object-cover"
       />
@@ -55,7 +56,7 @@ const MovieHero = ({ movie, isFavorite, setIsFavorite, setShowTrailer }: MovieHe
           <div className="flex-shrink-0 hidden md:block">
             <div className="relative rounded-xl overflow-hidden shadow-2xl w-64">
               <img
-                src={movie.poster_path || movie.backdrop_path}
+                src={getImageUrl(movie.poster_path) || getImageUrl(movie.backdrop_path)}
                 alt={movie.title}
                 className="w-full aspect-[2/3] object-contain bg-zinc-900"
               />

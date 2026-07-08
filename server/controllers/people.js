@@ -1,5 +1,5 @@
 const People = require("../models/people");
-const { uploadToBunny, deleteFromBunny } = require("../lib/bunnyService");
+const { saveFileLocally, deleteFileLocally, getFileUrl } = require("../lib/localStorage");
 
 const generateSlug = (name) => {
   return name
@@ -117,15 +117,11 @@ const createPeople = async (req, res) => {
       });
     }
 
-    const avatarUpload = await uploadToBunny(
+    const avatarUpload = await saveFileLocally(
       req.file.buffer,
-      req.file.originalname,
       "people/avatars",
+      req.file.originalname,
     );
-
-    if (!avatarUpload.success) {
-      return res.status(500).json({ message: "Failed to upload avatar" });
-    }
 
     const newPerson = new People({
       full_name,
@@ -133,7 +129,7 @@ const createPeople = async (req, res) => {
       birth_date: parsedDate,
       country_code,
       bio,
-      avatar_url: avatarUpload.cdnUrl,
+      avatar_url: getFileUrl(avatarUpload.filePath),
     });
 
     await newPerson.save();
@@ -215,25 +211,18 @@ const updatePeople = async (req, res) => {
 
     if (req.file) {
       if (person.avatar_url) {
-        const oldFilePath = person.avatar_url.split(".b-cdn.net/")[1];
-        if (oldFilePath) {
-          await deleteFromBunny(oldFilePath).catch((err) =>
-            console.log("Delete old avatar error:", err.message),
-          );
-        }
+        await deleteFileLocally(person.avatar_url.replace("/", "")).catch((err) =>
+          console.log("Delete old avatar error:", err.message),
+        );
       }
 
-      const avatarUpload = await uploadToBunny(
+      const avatarUpload = await saveFileLocally(
         req.file.buffer,
-        req.file.originalname,
         "people/avatars",
+        req.file.originalname,
       );
 
-      if (!avatarUpload.success) {
-        return res.status(500).json({ message: "Failed to upload avatar" });
-      }
-
-      updateData.avatar_url = avatarUpload.cdnUrl;
+      updateData.avatar_url = getFileUrl(avatarUpload.filePath);
     }
 
     if (Object.keys(updateData).length === 0) {
@@ -271,12 +260,9 @@ const deletePeople = async (req, res) => {
     }
 
     if (person.avatar_url) {
-      const filePath = person.avatar_url.split(".b-cdn.net/")[1];
-      if (filePath) {
-        await deleteFromBunny(filePath).catch((err) =>
-          console.log("Delete avatar error:", err.message),
-        );
-      }
+      await deleteFileLocally(person.avatar_url.replace("/", "")).catch((err) =>
+        console.log("Delete avatar error:", err.message),
+      );
     }
 
     const deletedPerson = await People.findByIdAndDelete(id);

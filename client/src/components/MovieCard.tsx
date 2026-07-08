@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { StarIcon, TicketIcon, PlayIcon, XIcon } from "lucide-react";
 import { useState } from "react";
+import { getImageUrl } from "@/lib/imageUtils";
 
 const getYoutubeId = (url: string) => {
   const match = url.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
@@ -38,7 +39,7 @@ const MovieCard = ({ movie }: MovieCardProps) => {
     >
       <div className="relative aspect-[2/3] overflow-hidden">
         <img
-          src={movie.poster_path || movie.backdrop_path}
+          src={getImageUrl(movie.poster_path) || getImageUrl(movie.backdrop_path)}
           alt={movie.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />

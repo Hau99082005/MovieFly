@@ -40,11 +40,11 @@ const videoSourceShema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    bunny_file_path: {
+    cloudinary_file_path: {
       type: String,
       required: false,
     },
-    bunny_storage_zone: {
+    cloudinary_storage_zone: {
       type: String,
       required: false,
     },

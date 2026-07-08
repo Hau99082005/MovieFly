@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import AdminLayout from "../../../pages/admin/AdminLayout";
+import { getImageUrl } from "@/lib/imageUtils";
 
 interface Movie {
   _id: string;
@@ -358,7 +359,7 @@ export default function MoviesPage() {
                         <div className="w-12 h-16 bg-zinc-800 rounded overflow-hidden flex-shrink-0">
                           {movie.poster_url ? (
                             <img
-                              src={movie.poster_url}
+                              src={getImageUrl(movie.poster_url)}
                               alt={movie.title}
                               className="w-full h-full object-cover"
                             />

@@ -32,10 +32,6 @@ const episodeSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    thumbnail_storage_zone: {
-      type: String,
-      default: "",
-    },
     video_url: {
       type: String,
       default: "",

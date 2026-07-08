@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Search, Edit, Trash2, Plus, X, User, Upload } from "lucide-react";
 import AdminLayout from "../../../pages/admin/AdminLayout";
 import toast from "react-hot-toast";
+import { getImageUrl } from "@/lib/imageUtils";
 
 interface Person {
   _id: string;
@@ -82,7 +83,7 @@ export default function ActorsPage() {
       bio: person.bio,
     });
     setAvatarFile(null);
-    setAvatarPreview(person.avatar_url);
+    setAvatarPreview(getImageUrl(person.avatar_url));
     setIsEditModalOpen(true);
   };
 
@@ -256,7 +257,7 @@ export default function ActorsPage() {
                       <td className="px-4 py-4 text-gray-400">{index + 1}</td>
                       <td className="px-4 py-4">
                         <img
-                          src={person.avatar_url}
+                          src={getImageUrl(person.avatar_url)}
                           alt={person.full_name}
                           className="w-12 h-12 rounded-full object-cover"
                         />

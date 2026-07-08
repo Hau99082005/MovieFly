@@ -1,8 +1,8 @@
 const VideoSource = require("../models/video_source");
 const {
-  uploadLargeFileToBunny,
-  deleteFromBunny,
-} = require("../lib/bunnyService");
+  uploadLargeFileToCloudinary,
+  deleteFromCloudinary,
+} = require("../lib/cloudinaryService");
 const { getVideoMetadata } = require("../lib/videoUtils");
 
 const getAllVideoSources = async (req, res) => {
@@ -161,10 +161,11 @@ const createVideoSource = async (req, res) => {
 
     const videoMetadata = await getVideoMetadata(req.file.buffer);
 
-    const uploadResult = await uploadLargeFileToBunny(
+    const uploadResult = await uploadLargeFileToCloudinary(
       req.file.buffer,
       req.file.originalname,
       "videos",
+      true,
     );
 
     if (!uploadResult.success) {
@@ -187,8 +188,8 @@ const createVideoSource = async (req, res) => {
       cdn_region,
       file_size_mb: videoMetadata.file_size_mb,
       is_default: is_default || false,
-      bunny_file_path: uploadResult.filePath,
-      bunny_storage_zone: uploadResult.storageZone,
+      cloudinary_file_path: uploadResult.filePath,
+      cloudinary_storage_zone: uploadResult.storageZone,
     });
 
     await newVideoSource.save();
@@ -225,19 +226,20 @@ const updateVideoSource = async (req, res) => {
     const { format, cdn_region, is_default } = req.body;
 
     if (req.file) {
-      if (videoSource.bunny_file_path) {
-        await deleteFromBunny(
-          videoSource.bunny_file_path,
-          videoSource.bunny_storage_zone,
+      if (videoSource.cloudinary_file_path) {
+        await deleteFromCloudinary(
+          videoSource.cloudinary_file_path,
+          videoSource.cloudinary_storage_zone,
         );
       }
 
       const videoMetadata = await getVideoMetadata(req.file.buffer);
 
-      const uploadResult = await uploadLargeFileToBunny(
+      const uploadResult = await uploadLargeFileToCloudinary(
         req.file.buffer,
         req.file.originalname,
         "videos",
+        true,
       );
 
       if (!uploadResult.success) {
@@ -249,8 +251,8 @@ const updateVideoSource = async (req, res) => {
       videoSource.quality = videoMetadata.quality;
       videoSource.file_size_mb = videoMetadata.file_size_mb;
       videoSource.url = uploadResult.cdnUrl;
-      videoSource.bunny_file_path = uploadResult.filePath;
-      videoSource.bunny_storage_zone = uploadResult.storageZone;
+      videoSource.cloudinary_file_path = uploadResult.filePath;
+      videoSource.cloudinary_storage_zone = uploadResult.storageZone;
     }
 
     if (format) videoSource.format = format;
@@ -297,10 +299,10 @@ const deleteVideoSource = async (req, res) => {
       return res.status(404).json({ message: "Video source not found" });
     }
 
-    if (videoSource.bunny_file_path) {
-      await deleteFromBunny(
-        videoSource.bunny_file_path,
-        videoSource.bunny_storage_zone,
+    if (videoSource.cloudinary_file_path) {
+      await deleteFromCloudinary(
+        videoSource.cloudinary_file_path,
+        videoSource.cloudinary_storage_zone,
       );
     }
 
@@ -328,10 +330,10 @@ const deleteVideoSourcesByMovieId = async (req, res) => {
     const videoSources = await VideoSource.find({ movieId });
 
     const deletePromises = videoSources.map((source) => {
-      if (source.bunny_file_path) {
-        return deleteFromBunny(
-          source.bunny_file_path,
-          source.bunny_storage_zone,
+      if (source.cloudinary_file_path) {
+        return deleteFromCloudinary(
+          source.cloudinary_file_path,
+          source.cloudinary_storage_zone,
         );
       }
       return Promise.resolve();
@@ -363,10 +365,10 @@ const deleteVideoSourcesByEpisodeId = async (req, res) => {
     const videoSources = await VideoSource.find({ episodeId });
 
     const deletePromises = videoSources.map((source) => {
-      if (source.bunny_file_path) {
-        return deleteFromBunny(
-          source.bunny_file_path,
-          source.bunny_storage_zone,
+      if (source.cloudinary_file_path) {
+        return deleteFromCloudinary(
+          source.cloudinary_file_path,
+          source.cloudinary_storage_zone,
         );
       }
       return Promise.resolve();
@@ -498,8 +500,8 @@ const finalizeChunkUpload = async (req, res) => {
     const videoMetadata = await getVideoMetadata(fileBuffer);
     console.log("Video metadata:", videoMetadata);
 
-    console.log("Uploading to Bunny CDN...");
-    const uploadResult = await uploadLargeFileToBunny(
+    console.log("Uploading to Cloudinary CDN...");
+    const uploadResult = await uploadLargeFileToCloudinary(
       fileBuffer,
       fileName,
       "videos",
@@ -542,8 +544,8 @@ const finalizeChunkUpload = async (req, res) => {
       cdn_region,
       file_size_mb: videoMetadata.file_size_mb,
       is_default: is_default || false,
-      bunny_file_path: uploadResult.filePath,
-      bunny_storage_zone: uploadResult.storageZone,
+      cloudinary_file_path: uploadResult.filePath,
+      cloudinary_storage_zone: uploadResult.storageZone,
     });
 
     await newVideoSource.save();

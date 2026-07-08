@@ -27,10 +27,6 @@ const Seasons = new mongoose.Schema(
       type: String,
       default: "",
     },
-    poster_storage_zone: {
-      type: String,
-      default: "",
-    },
     releaseDate: {
       type: Date,
       default: null,
