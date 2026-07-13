@@ -150,7 +150,7 @@ const App = () => {
         <Route path="/admin/actors" element={<ActorsPage />} />
         <Route path="/admin/comments" element={<CommemtsPage />} />
         <Route path="/admin/settings" element={<SettingsPage />} />
-        <Route path="/subscription-plans" element={<SubscriptionPlans />} />
+        <Route path="/subscription-plans" element={<SubscriptionPlans onSubscribe={() => {}} />} />
       </Routes>
       {!isAdminRoute && <Footer />}
       {user && <RefreshRoleButton />}
