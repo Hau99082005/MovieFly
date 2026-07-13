@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import AdminLayout from "../../../pages/admin/AdminLayout";
 import { getImageUrl } from "@/lib/imageUtils";
+import toast from "react-hot-toast";
 
 interface Movie {
   _id: string;
@@ -42,6 +43,7 @@ interface Movie {
 }
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+const CHUNK_SIZE = 5 * 1024 * 1024;
 
 export default function MoviesPage() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -70,6 +72,10 @@ export default function MoviesPage() {
   const [posterFile, setPosterFile] = useState<File | null>(null);
   const [backdropFile, setBackdropFile] = useState<File | null>(null);
   const [trailerFile, setTrailerFile] = useState<File | null>(null);
+  const [isUploadingTrailer, setIsUploadingTrailer] = useState(false);
+  const [trailerUploadProgress, setTrailerUploadProgress] = useState(0);
+  const [currentChunk, setCurrentChunk] = useState(0);
+  const [totalChunks, setTotalChunks] = useState(0);
 
   useEffect(() => {
     fetchMovies();
@@ -140,27 +146,101 @@ export default function MoviesPage() {
     setIsEditModalOpen(true);
   };
 
+  const uploadTrailerInChunks = async (file: File): Promise<string> => {
+    const chunks = Math.ceil(file.size / CHUNK_SIZE);
+    setTotalChunks(chunks);
+    const uploadId = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
+    const fileName = `trailer-${uploadId}-${file.name}`;
+
+    for (let chunkIndex = 0; chunkIndex < chunks; chunkIndex++) {
+      const start = chunkIndex * CHUNK_SIZE;
+      const end = Math.min(start + CHUNK_SIZE, file.size);
+      const chunk = file.slice(start, end);
+
+      const chunkFormData = new FormData();
+      chunkFormData.append("chunk", chunk);
+      chunkFormData.append("chunkIndex", chunkIndex.toString());
+      chunkFormData.append("totalChunks", chunks.toString());
+      chunkFormData.append("uploadId", uploadId);
+      chunkFormData.append("fileName", fileName);
+
+      const response = await fetch(`${API_URL}/video-sources/upload-chunk`, {
+        method: "POST",
+        body: chunkFormData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Chunk ${chunkIndex + 1} upload failed`);
+      }
+
+      setCurrentChunk(chunkIndex + 1);
+      const progress = Math.round(((chunkIndex + 1) / chunks) * 100);
+      setTrailerUploadProgress(progress);
+    }
+
+    const finalizeData = {
+      uploadId: uploadId,
+      fileName: fileName,
+      totalChunks: chunks,
+      folder: "trailers",
+    };
+
+    const finalizeResponse = await fetch(`${API_URL}/trailers/finalize`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(finalizeData),
+    });
+
+    if (!finalizeResponse.ok) {
+      const error = await finalizeResponse.json();
+      throw new Error(error.message || "Failed to finalize trailer upload");
+    }
+
+    const result = await finalizeResponse.json();
+    return result.cdnUrl || result.data?.url || "";
+  };
+
   const handleSubmit = async () => {
     if (!formData.title || !formData.original_title) {
-      alert("Vui lòng nhập đầy đủ thông tin");
+      toast.error("Vui lòng nhập đầy đủ thông tin");
       return;
     }
 
     try {
+      let trailerUrl = editingMovie?.trailer_url || "";
+
+      if (trailerFile) {
+        setIsUploadingTrailer(true);
+        try {
+          trailerUrl = await uploadTrailerInChunks(trailerFile);
+        } catch (error: any) {
+          toast.error(error.message || "Lỗi khi upload trailer");
+          return;
+        } finally {
+          setIsUploadingTrailer(false);
+          setTrailerUploadProgress(0);
+          setCurrentChunk(0);
+          setTotalChunks(0);
+        }
+      }
+
       const formDataToSend = new FormData();
 
       Object.entries(formData).forEach(([key, value]) => {
         formDataToSend.append(key, value.toString());
       });
 
+      if (trailerUrl) {
+        formDataToSend.append("trailer_url", trailerUrl);
+      }
+
       if (posterFile) {
         formDataToSend.append("poster", posterFile);
       }
       if (backdropFile) {
         formDataToSend.append("backdrop", backdropFile);
-      }
-      if (trailerFile) {
-        formDataToSend.append("trailer", trailerFile);
       }
 
       const url = editingMovie
@@ -177,15 +257,15 @@ export default function MoviesPage() {
         await fetchMovies();
         setIsCreateModalOpen(false);
         setIsEditModalOpen(false);
-        alert(
+        toast.success(
           editingMovie ? "Cập nhật phim thành công" : "Tạo phim thành công",
         );
       } else {
         const error = await response.json();
-        alert(error.message || "Có lỗi xảy ra");
+        toast.error(error.message || "Có lỗi xảy ra");
       }
     } catch (error) {
-      alert("Có lỗi xảy ra");
+      toast.error("Có lỗi xảy ra");
     }
   };
 
@@ -660,6 +740,56 @@ export default function MoviesPage() {
                       </span>
                     </label>
                   </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-300">
+                  Trailer Video
+                </label>
+                <div className="border-2 border-dashed border-zinc-700 rounded-lg p-4">
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onChange={(e) =>
+                      setTrailerFile(e.target.files?.[0] || null)
+                    }
+                    className="hidden"
+                    id="trailer-upload"
+                    disabled={isUploadingTrailer}
+                  />
+                  <label
+                    htmlFor="trailer-upload"
+                    className={`cursor-pointer flex flex-col items-center ${isUploadingTrailer ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <Upload className="w-8 h-8 text-gray-500 mb-2" />
+                    <span className="text-gray-400 text-xs">
+                      {trailerFile ? trailerFile.name : "Chọn video trailer"}
+                    </span>
+                    {trailerFile && (
+                      <span className="text-gray-500 text-xs mt-1">
+                        {(trailerFile.size / (1024 * 1024)).toFixed(2)} MB
+                      </span>
+                    )}
+                  </label>
+                  
+                  {isUploadingTrailer && (
+                    <div className="mt-4">
+                      <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
+                        <span>Đang upload trailer...</span>
+                        <span>{trailerUploadProgress}%</span>
+                      </div>
+                      <div className="w-full bg-zinc-800 rounded-full h-2">
+                        <div
+                          className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${trailerUploadProgress}%` }}
+                        />
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        Chunk {currentChunk}/{totalChunks}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

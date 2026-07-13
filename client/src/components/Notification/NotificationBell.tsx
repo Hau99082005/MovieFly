@@ -33,7 +33,6 @@ const NotificationBell = ({
   deleteNotification,
   deleteAll,
   fetchNotifications,
-  userId,
 }: NotificationBellProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("all");

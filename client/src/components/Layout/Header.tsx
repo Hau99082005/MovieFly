@@ -344,9 +344,10 @@ const Header = ({ userRole, mongoUserId }: HeaderProps) => {
 
         <div className="mt-auto flex flex-col gap-3 pt-6 border-t border-white/10">
           <Link to="/subscription-plans" onClick={closeMenu}>
-          <button className="w-full py-3 bg-primary hover:bg-primary/50 transition-colors rounded-lg text-sm font-bold text-black">
-            ĐĂNG KÝ GÓI
-          </button>
+            <button className="w-full py-3 bg-primary hover:bg-primary/50 transition-colors rounded-lg text-sm font-bold text-black">
+              ĐĂNG KÝ GÓI
+            </button>
+          </Link>
           <button
             onClick={() => {
               setIsSearchOpen(true);

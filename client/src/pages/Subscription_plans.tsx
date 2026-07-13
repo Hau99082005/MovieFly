@@ -1,28 +1,47 @@
 import { useEffect, useMemo, useState } from "react";
 import { Check, Monitor, Download, Ban, Sparkles, Film, Loader2 } from "lucide-react";
 
+interface Plan {
+  _id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price: number;
+  currency: string;
+  duration_days: number;
+  is_active: boolean;
+  video_quality: string;
+  max_screens: number | string;
+  max_downloads: number;
+  has_ads: boolean;
+}
+
+interface SubscriptionPlansProps {
+  onSubscribe?: (plan: Plan) => void;
+}
+
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
-const DURATION_LABELS = {
+const DURATION_LABELS: Record<number, string> = {
   30: "Theo tháng",
   90: "3 tháng",
   365: "Theo năm",
 };
 
-const durationLabel = (days) => DURATION_LABELS[days] || `${days} ngày`;
+const durationLabel = (days: number): string => DURATION_LABELS[days] || `${days} ngày`;
 
-const formatPrice = (price, currency) =>
+const formatPrice = (price: number, currency: string): string =>
   new Intl.NumberFormat("vi-VN", {
     style: currency === "VND" ? "currency" : "decimal",
     currency: currency === "VND" ? "VND" : undefined,
     maximumFractionDigits: 0,
   }).format(price) + (currency !== "VND" ? ` ${currency}` : "");
 
-export default function SubscriptionPlans({ onSubscribe }) {
-  const [plans, setPlans] = useState([]);
-  const [status, setStatus] = useState("loading"); // loading | success | error
-  const [activeDuration, setActiveDuration] = useState(null);
-  const [selectedId, setSelectedId] = useState(null);
+export default function SubscriptionPlans({ onSubscribe }: SubscriptionPlansProps) {
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [activeDuration, setActiveDuration] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -36,15 +55,15 @@ export default function SubscriptionPlans({ onSubscribe }) {
 
         // Chỉ giữ gói đang active trang đăng ký.
         const data = (json.data || [])
-          .filter((p) => p.is_active && p.slug !== "free")
-          .sort((a, b) => a.price - b.price);
+          .filter((p: Plan) => p.is_active && p.slug !== "free")
+          .sort((a: Plan, b: Plan) => a.price - b.price);
 
         if (!ignore) {
           setPlans(data);
-          const firstDuration = [...new Set(data.map((p) => p.duration_days))].sort(
-            (a, b) => a - b
-          )[0];
-          setActiveDuration(firstDuration ?? null);
+          const durationSet = new Set<number>(data.map((p: Plan) => p.duration_days));
+          const durations = Array.from(durationSet);
+          const firstDuration = durations.length > 0 ? durations.sort((a, b) => a - b)[0] : null;
+          setActiveDuration(firstDuration);
           setStatus("success");
         }
       } catch {
@@ -71,7 +90,7 @@ export default function SubscriptionPlans({ onSubscribe }) {
   const popularId = visiblePlans[Math.floor(visiblePlans.length / 2)]?._id;
   const selectedPlan = visiblePlans.find((p) => p._id === selectedId);
 
-  const handleTabChange = (days) => {
+  const handleTabChange = (days: number) => {
     setActiveDuration(days);
     setSelectedId(null);
   };
@@ -186,7 +205,14 @@ export default function SubscriptionPlans({ onSubscribe }) {
   );
 }
 
-function PlanCard({ plan, isSelected, isPopular, onSelect }) {
+interface PlanCardProps {
+  plan: Plan;
+  isSelected: boolean;
+  isPopular: boolean;
+  onSelect: () => void;
+}
+
+function PlanCard({ plan, isSelected, isPopular, onSelect }: PlanCardProps) {
   const screenCount =
     typeof plan.max_screens === "number" ? plan.max_screens : plan.max_screens ? "Không giới hạn" : 1;
 

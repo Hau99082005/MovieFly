@@ -86,6 +86,9 @@ const getMovieById = async (req, res) => {
 
 const createMovie = async (req, res) => {
   try {
+    console.log("📝 Creating movie, body:", req.body);
+    console.log("📁 Files received:", req.files ? Object.keys(req.files) : "none");
+    
     const {
       title,
       original_title,
@@ -94,6 +97,7 @@ const createMovie = async (req, res) => {
       status,
       synopsis,
       tagline,
+      trailer_url,
       release_date,
       country_code,
       language,
@@ -139,34 +143,46 @@ const createMovie = async (req, res) => {
       is_free: is_free || false,
     };
 
+    if (trailer_url) {
+      movieData.trailer_url = trailer_url;
+    }
+
     const uploadPromises = [];
 
     if (req.files) {
       if (req.files.poster) {
+        console.log("📸 Uploading poster:", req.files.poster[0].originalname);
         uploadPromises.push(
           saveFileLocally(
             req.files.poster[0].buffer,
             "movies/posters",
             req.files.poster[0].originalname
-          ).then(result => ({
-            field: "poster",
-            url: getFileUrl(result.filePath),
-            path: result.filePath,
-          }))
+          ).then(result => {
+            console.log("✅ Poster saved:", result);
+            return {
+              field: "poster",
+              url: getFileUrl(result.filePath),
+              path: result.filePath,
+            };
+          })
         );
       }
 
       if (req.files.backdrop) {
+        console.log("🖼️ Uploading backdrop:", req.files.backdrop[0].originalname);
         uploadPromises.push(
           saveFileLocally(
             req.files.backdrop[0].buffer,
             "movies/backdrops",
             req.files.backdrop[0].originalname
-          ).then(result => ({
-            field: "backdrop",
-            url: getFileUrl(result.filePath),
-            path: result.filePath,
-          }))
+          ).then(result => {
+            console.log("✅ Backdrop saved:", result);
+            return {
+              field: "backdrop",
+              url: getFileUrl(result.filePath),
+              path: result.filePath,
+            };
+          })
         );
       }
 
@@ -195,6 +211,8 @@ const createMovie = async (req, res) => {
 
     const uploadResults = await Promise.all(uploadPromises);
 
+    console.log("✅ Upload results:", uploadResults);
+
     uploadResults.forEach(result => {
       if (result.field === "poster") {
         movieData.poster_url = result.url;
@@ -214,6 +232,8 @@ const createMovie = async (req, res) => {
 
     const newMovie = new Movies(movieData);
     await newMovie.save();
+
+    console.log("✅ Movie created:", newMovie._id, "with poster:", newMovie.poster_url);
 
     return res.status(201).json({
       message: "Movie created successfully",
@@ -243,6 +263,7 @@ const updateMovie = async (req, res) => {
       status,
       synopsis,
       tagline,
+      trailer_url,
       release_date,
       country_code,
       language,
@@ -288,6 +309,7 @@ const updateMovie = async (req, res) => {
     if (imdb_score !== undefined) updateData.imdb_score = imdb_score;
     if (is_featured !== undefined) updateData.is_featured = is_featured;
     if (is_free !== undefined) updateData.is_free = is_free;
+    if (trailer_url !== undefined) updateData.trailer_url = trailer_url;
 
     const uploadPromises = [];
     const deletePromises = [];
@@ -332,7 +354,7 @@ const updateMovie = async (req, res) => {
       }
 
       if (req.files.trailer) {
-        if (movie.trailer_path) {
+        if (movie.trailer_path && movie.trailer_storage_zone) {
           deletePromises.push(
             deleteFromCloudinary(movie.trailer_path, movie.trailer_storage_zone)
           );
@@ -406,16 +428,20 @@ const deleteMovie = async (req, res) => {
       return res.status(404).json({ message: "Movie not found" });
     }
 
-    if (movie.poster_path) {
+    if (movie.poster_path && !movie.poster_path.startsWith("http")) {
       await deleteFileLocally(movie.poster_path);
     }
 
-    if (movie.backdrop_path) {
+    if (movie.backdrop_path && !movie.backdrop_path.startsWith("http")) {
       await deleteFileLocally(movie.backdrop_path);
     }
 
-    if (movie.trailer_path) {
-      await deleteFromCloudinary(movie.trailer_path, movie.trailer_storage_zone);
+    if (movie.trailer_path && movie.trailer_storage_zone && !movie.trailer_path.startsWith("http")) {
+      try {
+        await deleteFromCloudinary(movie.trailer_path, movie.trailer_storage_zone);
+      } catch (err) {
+        console.log("Delete trailer error:", err.message);
+      }
     }
 
     await Movies.findByIdAndDelete(id);
