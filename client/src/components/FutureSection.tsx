@@ -1,14 +1,18 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
-import { movieGenresApi } from "@/lib/api";
+import { moviesApi } from "@/lib/api";
 import MovieCard from "./MovieCard";
+import { getImageUrl } from "@/lib/imageUtils";
 
 interface Movie {
   _id: string;
   title: string;
   poster_url: string;
   backdrop_url: string;
+  trailer_url: string;
   rating: number;
+  release_date: string;
+  duration_min: number;
   [key: string]: any;
 }
 
@@ -24,18 +28,6 @@ interface MovieForCard {
   trailerUrl?: string;
 }
 
-interface Genre {
-  _id: string;
-  name: string;
-  slug: string;
-}
-
-interface MovieGenre {
-  _id: string;
-  movieId: Movie;
-  genreId: Genre;
-}
-
 interface GroupedMovies {
   [genreName: string]: MovieForCard[];
 }
@@ -49,33 +41,31 @@ const FutureSection = () => {
 
   const loadMovieGenres = async () => {
     try {
-      const response = await movieGenresApi.getAll();
+      const response = await moviesApi.getAll({ limit: 50, status: "published" });
       if (response.data && Array.isArray(response.data)) {
         const grouped: GroupedMovies = {};
-
-        response.data.forEach((item: MovieGenre) => {
-          if (item.movieId && item.genreId) {
-            const genreName = item.genreId.name;
-            if (!grouped[genreName]) {
-              grouped[genreName] = [];
-            }
-            if (!grouped[genreName].find((m) => m._id === item.movieId._id)) {
-              const movieForCard: MovieForCard = {
-                _id: item.movieId._id,
-                title: item.movieId.title,
-                backdrop_path:
-                  item.movieId.backdrop_url || item.movieId.poster_url,
-                poster_path: item.movieId.poster_url,
-                vote_average: item.movieId.rating || 0,
-                trailerUrl: item.movieId.trailer_url,
-                release_date: item.movieId.release_date,
-                runtime: item.movieId.duration_min,
-              };
-              grouped[genreName].push(movieForCard);
-            }
+        
+        response.data.forEach((movie: Movie) => {
+          const genreName = "Phim Mới";
+          
+          if (!grouped[genreName]) {
+            grouped[genreName] = [];
           }
+          
+          const movieForCard: MovieForCard = {
+            _id: movie._id,
+            title: movie.title,
+            backdrop_path: getImageUrl(movie.backdrop_url || movie.poster_url) || "/placeholder-backdrop.jpg",
+            poster_path: getImageUrl(movie.poster_url) || "/placeholder-poster.jpg",
+            vote_average: movie.rating || 0,
+            trailerUrl: getImageUrl(movie.trailer_url) || "",
+            release_date: movie.release_date,
+            runtime: movie.duration_min,
+          };
+          
+          grouped[genreName].push(movieForCard);
         });
-
+        
         setGroupedMovies(grouped);
       }
     } catch (err) {
