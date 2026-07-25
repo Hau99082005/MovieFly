@@ -1,12 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const cloudinary = require("cloudinary").v2;
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+const { saveFileLocally, getFileUrl } = require("../lib/localStorage");
 
 const uploadDir = path.join(__dirname, "../uploads/chunks");
 
@@ -49,8 +43,6 @@ const finalizeTrailerUpload = async (req, res) => {
   try {
     const { uploadId, fileName, totalChunks, folder } = req.body;
 
-    console.log("📤 Finalizing trailer upload:", { uploadId, fileName, totalChunks, folder });
-
     uploadFolder = path.join(uploadDir, uploadId);
     finalFilePath = path.join(uploadDir, `final_${Date.now()}_${fileName}`);
 
@@ -86,33 +78,11 @@ const finalizeTrailerUpload = async (req, res) => {
 
     const fileBuffer = fs.readFileSync(finalFilePath);
 
-    console.log("☁️ Uploading to Cloudinary, file size:", fileBuffer.length, "bytes");
-
-    const uploadResult = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          resource_type: "video",
-          folder: folder || "trailers",
-          chunk_size: 6000000,
-        },
-        (error, result) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve({
-              success: true,
-              cdnUrl: result.secure_url,
-              publicId: result.public_id,
-              filePath: result.public_id,
-            });
-          }
-        }
-      );
-
-      uploadStream.end(fileBuffer);
-    });
-
-    console.log("✅ Upload to Cloudinary successful:", uploadResult.cdnUrl);
+    const uploadResult = await saveFileLocally(
+      fileBuffer,
+      "movies",
+      fileName
+    );
 
     if (fs.existsSync(uploadFolder)) {
       const remainingFiles = fs.readdirSync(uploadFolder);
@@ -130,12 +100,14 @@ const finalizeTrailerUpload = async (req, res) => {
     }
 
     if (!uploadResult.success) {
-      return res.status(500).json({ message: "Failed to upload trailer to CDN" });
+      return res.status(500).json({ message: "Failed to upload trailer" });
     }
+
+    const cdnUrl = getFileUrl(uploadResult.filePath);
 
     return res.status(200).json({
       message: "Trailer uploaded successfully",
-      cdnUrl: uploadResult.cdnUrl,
+      cdnUrl: cdnUrl,
       filePath: uploadResult.filePath,
     });
   } catch (error) {

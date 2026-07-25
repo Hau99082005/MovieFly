@@ -37,11 +37,11 @@ const MovieCard = ({ movie }: MovieCardProps) => {
         scrollTo(0, 0);
       }}
     >
-      <div className="relative aspect-[2/3] overflow-hidden">
+      <div className="relative aspect-[2/3] overflow-hidden bg-zinc-900">
         <img
           src={getImageUrl(movie.poster_path) || getImageUrl(movie.backdrop_path)}
           alt={movie.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
