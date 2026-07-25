@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { PlayIcon } from "lucide-react";
 import { moviesApi } from "@/lib/api";
+import { getImageUrl } from "@/lib/imageUtils";
 
 interface Movie {
   _id: string;
@@ -130,7 +131,7 @@ const TrailersSection = () => {
                     {isPlaying && isActive ? (
                       <video
                         className="w-full h-full object-contain bg-black"
-                        src={movie.trailer_url}
+                        src={getImageUrl(movie.trailer_url)}
                         controls
                         autoPlay
                         onEnded={() => setIsPlaying(false)}
@@ -139,7 +140,7 @@ const TrailersSection = () => {
                       <div className="relative w-full h-full bg-black">
                         <img
                           key={animKey}
-                          src={movie.poster_url}
+                          src={getImageUrl(movie.poster_url)}
                           alt={movie.title}
                           className="w-full h-full object-contain"
                         />
@@ -215,7 +216,7 @@ const TrailersSection = () => {
                   >
                     <div className="relative w-full aspect-[16/9] lg:aspect-video">
                       <img
-                        src={movie.poster_url}
+                        src={getImageUrl(movie.poster_url)}
                         alt={movie.title}
                         className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                       />

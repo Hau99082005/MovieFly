@@ -10,6 +10,7 @@ import {
   Volume2Icon,
   VolumeXIcon,
 } from "lucide-react";
+import { getImageUrl } from "@/lib/imageUtils";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
@@ -241,7 +242,7 @@ const MovieDetailMovieFly = () => {
             />
           ) : (
             <img
-              src={movie.backdrop_url}
+              src={getImageUrl(movie.backdrop_url)}
               alt={movie.title}
               className="w-full h-full object-cover"
             />
@@ -577,7 +578,7 @@ const MovieDetailMovieFly = () => {
               onClick={() => setShowTrailer(true)}
             >
               <img
-                src={movie.poster_url}
+                src={getImageUrl(movie.poster_url)}
                 alt="Trailer"
                 className="w-full aspect-video object-cover rounded-none"
                 style={{
@@ -646,7 +647,7 @@ const MovieDetailMovieFly = () => {
                 >
                   <div className="relative aspect-[2/3] overflow-hidden rounded-lg mb-2">
                     <img
-                      src={similar.poster_url}
+                      src={getImageUrl(similar.poster_url)}
                       alt={similar.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
